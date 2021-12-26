@@ -13,38 +13,38 @@ typedef struct data {
 } DATA;
 
 
-void *klient(void *data) {
-    DATA *d = data;
-    int hra = 0;
-    while (hra == 0) {
-        while (koniectahu_klienta) {
-            //Caka na signal od servera ze je dalsi tah
-        }
-        n = read(newsockfd, buffer, 255);
-        hra.vypis;
-    }
-
-
-    hra = 1;
-    //sigranlizovat ze je koniec tahu klienta
-}
-
-void *server(void *data) {
-    DATA *d = data;
-    int hra = 0;
-    while (hra == 0) {
-        while (koniectahu_servera) {
-            //Caka na signal od klienta ze je na tahu
-        }
-        printf("Please enter a message: ");
-        bzero(buffer, 256);
-        fgets(buffer, 255, stdin);
-
-        hra = 1;
-
-        //sigranlizovat koniec tahu
-    }
-}
+//void *klient(void *data) {
+//    DATA *d = data;
+//    int hra = 0;
+//    while (hra == 0) {
+//        while (koniectahu_klienta) {
+//            //Caka na signal od servera ze je dalsi tah
+//        }
+//        n = read(newsockfd, buffer, 255);
+//        hra.vypis;
+//    }
+//
+//
+//    hra = 1;
+//    //sigranlizovat ze je koniec tahu klienta
+//}
+//
+//void *server(void *data) {
+//    DATA *d = data;
+//    int hra = 0;
+//    while (hra == 0) {
+//        while (koniectahu_servera) {
+//            //Caka na signal od klienta ze je na tahu
+//        }
+//        printf("Please enter a message: ");
+//        bzero(buffer, 256);
+//        fgets(buffer, 255, stdin);
+//
+//        hra = 1;
+//
+//        //sigranlizovat koniec tahu
+//    }
+//}
 
 int main(int argc, char *argv[]) {
     int sockfd, newsockfd;
