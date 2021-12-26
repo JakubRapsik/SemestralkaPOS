@@ -20,6 +20,10 @@ int main(int argc, char *argv[])
         return 1;
     }
 
+
+
+
+
     bzero((char*)&serv_addr, sizeof(serv_addr));
     serv_addr.sin_family = AF_INET;
     serv_addr.sin_addr.s_addr = INADDR_ANY;
