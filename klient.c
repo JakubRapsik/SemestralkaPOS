@@ -9,6 +9,8 @@
 
 int main(int argc, char *argv[])
 {
+
+
     int sockfd, n;
     struct sockaddr_in serv_addr;
     struct hostent* server;
