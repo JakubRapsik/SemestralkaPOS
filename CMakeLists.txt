@@ -3,5 +3,10 @@ project(SemestralkaServer C)
 
 set(CMAKE_C_STANDARD 99)
 
+
+add_executable(SemestralkaServer server.c hra.h)
+target_link_libraries(SemestralkaServer pthread m)
+=======
 add_executable(SemestralkaServer server.c hra.c hra.h)
 target_link_libraries(SemestralkaServer pthread m)
+
