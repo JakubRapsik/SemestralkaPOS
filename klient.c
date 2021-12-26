@@ -13,7 +13,7 @@ int main(int argc, char *argv[])
     struct sockaddr_in serv_addr;
     struct hostent* server;
 
-    char buffer[256];
+    char buffer[3];
 
     if (argc < 3)
     {
@@ -50,22 +50,22 @@ int main(int argc, char *argv[])
         return 4;
     }
 
-    printf("Please enter a message: ");
+    printf("Zadajte cislo stplca kde padne zeton: ");
     bzero(buffer,256);
     fgets(buffer, 255, stdin);
 
     n = write(sockfd, buffer, strlen(buffer));
     if (n < 0)
     {
-        perror("Error writing to socket");
+        perror("Chyba pri poslati spravy na server");
         return 5;
     }
 
-    bzero(buffer,256);
-    n = read(sockfd, buffer, 255);
+    bzero(buffer,3);
+    n = read(sockfd, buffer, 2);
     if (n < 0)
     {
-        perror("Error reading from socket");
+        perror("Chyba pri prijmani spravi zo servera");
         return 6;
     }
 
