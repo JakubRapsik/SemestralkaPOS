@@ -20,8 +20,24 @@ typedef struct data {
 //        while (koniectahu_klienta) {
 //            //Caka na signal od servera ze je dalsi tah
 //        }
+//
+//        int error = -1;
 //        n = read(newsockfd, buffer, 255);
-//        hra.vypis;
+//        if (tah(buffer, 'X') == 1) {
+//            error = 1;
+//        } else {
+//            error = 0;
+//        }
+//        while (error != 0) {
+//            const char *msg = "Zadaj nove cislo";
+//            n = write(d->newsockfd, msg, strlen(msg) + 1);
+//            n = read(newsockfd, buffer, 255);
+//            if (tah(buffer, 'X') == 0) {
+//                error = 0;
+//            }
+//
+//        }
+//        vypis();
 //    }
 //
 //
@@ -36,12 +52,27 @@ typedef struct data {
 //        while (koniectahu_servera) {
 //            //Caka na signal od klienta ze je na tahu
 //        }
-//        printf("Please enter a message: ");
+//
+//        int error = -1;
+//        printf("Zadaj cislo stlpca");
 //        bzero(buffer, 256);
 //        fgets(buffer, 255, stdin);
-//
+//        if (tah(buffer, 'Y') == 1) {
+//            error = 1;
+//        } else {
+//            error = 0;
+//        }
+//        while (error != 0) {
+//            printf("Zadaj ine cislo \n");
+////            scanf("%d",buffer);
+//            bzero(buffer, 256);
+//            fgets(buffer, 255, stdin);
+//            if (tah(buffer, 'X') == 0) {
+//                error = 0;
+//            }
+//        }
+//        vypis();
 //        hra = 1;
-//
 //        //sigranlizovat koniec tahu
 //    }
 //}

@@ -6,7 +6,9 @@
 
 #include <stdbool.h>
 
-void tah(int stlpec);
+int prehladavanie(int stlpec,int riadok, char znak);
+
+int tah(int stlpec, char hrac);
 
 void vypis(char *b, int socket);
 
