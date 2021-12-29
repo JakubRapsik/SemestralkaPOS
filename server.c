@@ -16,6 +16,7 @@ typedef struct data {
     int *skoreServer;
     int *koniecTahov;
     int *hra;
+    int *vyherca;
     pthread_mutex_t *mutex;
     pthread_cond_t *aktualizovaneSkore;
     pthread_cond_t *koniecTahu;
@@ -42,7 +43,7 @@ void *priebehHry(void *data) {
             error = 0;
         }
         while (error != 0) {
-            const char *msg = "Zadaj nove cislo";
+            const char *msg = "Zadaj nove cislo\n";
             write(*d->newsockfd, msg, strlen(msg) + 1);
             read(*d->newsockfd, buffer, 255);
             riadok = tah((int) buffer, 'X', d->hraciaPlocha);
@@ -52,10 +53,11 @@ void *priebehHry(void *data) {
         }
 //        vypis();
         if (kontrolaVyhry(d->hraciaPlocha, (int) buffer, riadok)) {
+            *d->vyherca = 0;
             *d->hra = 1;
         }
         if (*d->hra == 0) {
-            printf("Zadaj cislo stlpca");
+            printf("Zadaj cislo stlpca\n");
             bzero(buffer, 256);
             fgets(buffer, 255, stdin);
             riadok = tah((int) buffer, 'Y', d->hraciaPlocha);
@@ -78,6 +80,7 @@ void *priebehHry(void *data) {
 //        vypis();
             *d->koniecTahov = *d->koniecTahov + 1;
             if (kontrolaVyhry(d->hraciaPlocha, (int) buffer, riadok)) {
+                *d->vyherca = 1;
                 *d->hra = 1;
             }
             if (counter == 21) {
@@ -100,17 +103,10 @@ void *skoreHry(void *data) {
         }
 //        *d->skoreKlient = skore('X', d->hraciaPlocha);
 //        *d->skoreServer = skore('Y', d->hraciaPlocha);
-        printf("Skore uprava");
+        printf("Skore uprava\n");
         *d->koniecTahov = 0;
         pthread_cond_signal(d->aktualizovaneSkore);
 
-    }
-    if (*d->hra == 1) {
-        printf("Vyhral Hrac XY");
-
-    }
-    if (*d->hra == 2) {
-        printf("Remiza vyhral hrac XY na body");
     }
 
 }
@@ -131,6 +127,7 @@ int main(int argc, char *argv[]) {
     int skoreServer = 0;
     int koniectahov = 0;
     int hra = 0;
+    int vyherca = -1;
     socklen_t cli_len;
     struct sockaddr_in serv_addr, cli_addr;
     int n;
@@ -175,7 +172,8 @@ int main(int argc, char *argv[]) {
     pthread_cond_init(&aktualneSkore, NULL);
     pthread_cond_init(&koniecTahov, NULL);
 
-    DATA dataSpol = {hraciaPlocha, &newsockfd, &skoreKlient, &skoreServer, &koniectahov, &hra, &mutex, &aktualneSkore,
+    DATA dataSpol = {hraciaPlocha, &newsockfd, &skoreKlient, &skoreServer, &koniectahov, &hra, &vyherca, &mutex,
+                     &aktualneSkore,
                      &koniecTahov};
 
     pthread_create(&priebehhry, NULL, &priebehHry, &dataSpol);
@@ -184,6 +182,40 @@ int main(int argc, char *argv[]) {
     pthread_join(priebehhry, NULL);
     pthread_join(skore, NULL);
 
+    if (*dataSpol.hra == 1) {
+        const char *msg;
+        const int *msg2;
+        if (*dataSpol.vyherca == 0) {
+            msg = "Vyhral Hrac X pretoze ma styri rovnake v rade \n";
+            write(newsockfd, msg, strlen(msg) + 1);
+            msg = "Jeho skore bolo: ";
+            write(newsockfd, msg, strlen(msg) + 1);
+            msg2 = dataSpol.skoreKlient;
+            write(newsockfd, msg2, 3);
+            printf("Vyhral Hrac X pretoze ma styri rovnake v rade \n");
+            printf("Jeho skore bolo %d\n", *dataSpol.skoreKlient);
+        }
+        if (*dataSpol.vyherca == 1) {
+            msg = "Vyhral Hrac Y pretoze ma styri rovnake v rade \n";
+            write(newsockfd, msg, strlen(msg) + 1);
+            msg = "Jeho skore bolo: ";
+            write(newsockfd, msg, strlen(msg) + 1);
+            printf("Vyhral Hrac Y pretoze ma styri rovnake v rade\n");
+            printf("Jeho skore bolo %d\n", *dataSpol.skoreServer);
+        }
+        msg = "koniec";
+        write(newsockfd, msg, strlen(msg) + 1);
+    }
+    if (*dataSpol.hra == 2) {
+        printf("Remiza hra bola rozhodnuta na body\n");
+        if (*dataSpol.skoreServer > *dataSpol.skoreKlient) {
+            printf("Vyhral Hrac Y na body\n");
+            printf("Jeho skore bolo %d\n", *dataSpol.skoreServer);
+        } else {
+            printf("Vyhral Hrac X na body\n");
+            printf("Jeho skore bolo %d\n", *dataSpol.skoreKlient);
+        }
+    }
     //Vytvorenie thredov a ich joinovanie
     //create a join
     //Finalny vypis
