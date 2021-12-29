@@ -39,6 +39,7 @@ void *priebehHry(void *data) {
         read(*d->newsockfd, buffer, 255);
         int stlpec = atoi(buffer);
         stlpec--;
+        printf("Riadok bol zadany");
         pthread_mutex_lock(d->mutex);
         riadok = tah(stlpec, 'X', d->hraciaPlocha);
         pthread_mutex_unlock(d->mutex);
@@ -59,18 +60,15 @@ void *priebehHry(void *data) {
             }
         }
 //        vypis(d->hraciaPlocha,*d->newsockfd);
-        const char* msg;
-        pthread_mutex_lock(d->mutex);
-        for (int i = 0; i < 6; ++i) {
-            for (int j = 0; j < 7; ++j) {
-                msg = (*(d->hraciaPlocha + j) + i);
-                write(*d->newsockfd, msg, strlen(msg) + 1);
-                pthread_mutex_unlock(d->mutex);
-                printf("%d ", *(*(d->hraciaPlocha + j) + i));
-                pthread_mutex_lock(d->mutex);
-            }
+        char pomocnastlpec = stlpec;
+        char pomocnariadok = riadok;
+        const char *msg;
+        bzero(buffer, 256);
+        buffer[0] = pomocnastlpec;
+        buffer[1] = pomocnariadok;
+        write(*d->newsockfd, buffer, 255);
 
-        }
+
         if (kontrolaVyhry(d->hraciaPlocha, (int) buffer, riadok)) {
             *d->vyherca = 0;
             *d->hra = 1;
@@ -122,21 +120,20 @@ void *priebehHry(void *data) {
 //Kory hrac dal viac zenotov vedla seba
 void *skoreHry(void *data) {
     DATA *d = data;
-    pthread_mutex_lock(d->mutex);
     while (*d->hra == 0) {
 
         while (*d->koniecTahov == 0) {
             pthread_cond_wait(d->koniecTahu, d->mutex);
         }
 
-//        *d->skoreKlient = skore('X', d->hraciaPlocha);
-//        *d->skoreServer = skore('Y', d->hraciaPlocha);
+//      *d->skoreKlient = skore('X', d->hraciaPlocha);
+//      *d->skoreServer = skore('Y', d->hraciaPlocha);
         printf("Skore uprava\n");
+        pthread_mutex_lock(d->mutex);
         *d->koniecTahov = 1;
+        pthread_mutex_unlock(d->mutex);
         pthread_cond_signal(d->aktualizovaneSkore);
-
     }
-    pthread_mutex_unlock(d->mutex);
 }
 
 
@@ -157,17 +154,16 @@ int main(int argc, char *argv[]) {
     }
 
     // dynamically create an array of pointers of size `m`
-    int **arr = (int **)malloc(7 * sizeof(int *));
+    char **arr = (char **) malloc(7 * sizeof(char *));
 
     // dynamically allocate memory of size `n` for each row
     for (int r = 0; r < 7; r++) {
-        arr[r] = (int *)malloc(6 * sizeof(int));
+        arr[r] = (char *) malloc(6 * sizeof(char));
     }
 
-    for (int i = 0; i < 7; i++)
-    {
+    for (int i = 0; i < 7; i++) {
         for (int j = 0; j < 6; j++) {
-            arr[i][j] = 0;
+            arr[i][j] = 'O';
         }
     }
 

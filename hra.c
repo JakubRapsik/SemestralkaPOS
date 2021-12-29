@@ -144,7 +144,7 @@ bool kontrolaVyhry(char **hraciaPlocha, int globalstlpec, int globalriadok) {
 int tah(int stlpec, char hrac, char **hraciaPlocha) {
     for (int riadky = 5; riadky >= 0; riadky--) {
         if (stlpec - 1 >= 0 && stlpec + 1 <= 7 && riadky - 1 >= 0 && riadky + 1 <= 6) {
-            if (hraciaPlocha[stlpec][riadky] == 0) {
+            if (hraciaPlocha[stlpec][riadky] == 'O') {
                 hraciaPlocha[stlpec][riadky] = hrac;
                 return riadky;
             }
