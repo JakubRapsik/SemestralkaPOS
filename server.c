@@ -26,7 +26,10 @@ typedef struct data {
 void *priebehHry(void *data) {
     DATA *d = data;
     int riadok = 0;
+    int stlpec = 0;
     int counter = 0;
+    char pomocnastlpec;
+    char pomocnariadok;
     char buffer[256];
     pthread_mutex_lock(d->mutex);
     while (*d->hra == 0) {
@@ -37,9 +40,8 @@ void *priebehHry(void *data) {
         int error = -1;
         bzero(buffer, 256);
         read(*d->newsockfd, buffer, 255);
-        int stlpec = atoi(buffer);
+        stlpec = atoi(buffer);
         stlpec--;
-        printf("Riadok bol zadany");
         pthread_mutex_lock(d->mutex);
         riadok = tah(stlpec, 'X', d->hraciaPlocha);
         pthread_mutex_unlock(d->mutex);
@@ -49,27 +51,38 @@ void *priebehHry(void *data) {
             error = 0;
         }
         while (error != 0) {
-            const char *msg = "Zadaj nove cislo\n";
-            write(*d->newsockfd, msg, strlen(msg) + 1);
+            bzero(buffer, 256);
+            strcpy(buffer, "Zadaj nove cislo\n");
+            write(*d->newsockfd, buffer, 255);
+            bzero(buffer, 256);
             read(*d->newsockfd, buffer, 255);
+            stlpec = atoi(buffer);
+            stlpec--;
             pthread_mutex_lock(d->mutex);
-            riadok = tah((int) buffer, 'X', d->hraciaPlocha);
+            riadok = tah(stlpec, 'X', d->hraciaPlocha);
             pthread_mutex_unlock(d->mutex);
             if (riadok != -1) {
                 error = 0;
             }
         }
-//        vypis(d->hraciaPlocha,*d->newsockfd);
-        char pomocnastlpec = stlpec;
-        char pomocnariadok = riadok;
-        const char *msg;
+//      vypis(d->hraciaPlocha,*d->newsockfd);
+        pomocnastlpec = stlpec;
+        pomocnariadok = riadok;
         bzero(buffer, 256);
         buffer[0] = pomocnastlpec;
         buffer[1] = pomocnariadok;
+        buffer[2] = 'X';
         write(*d->newsockfd, buffer, 255);
+        for (int i = 0; i < 6; i++) {
+            for (int j = 0; j < 7; j++) {
+                printf("%c ", *(*(d->hraciaPlocha + j) + i));
+            }
+            printf("\n");
+            printf("\n------------------------------------\n");
+        }
 
 
-        if (kontrolaVyhry(d->hraciaPlocha, (int) buffer, riadok)) {
+        if (kontrolaVyhry(d->hraciaPlocha, stlpec, riadok)) {
             *d->vyherca = 0;
             *d->hra = 1;
         }
@@ -78,8 +91,10 @@ void *priebehHry(void *data) {
             printf("Zadaj cislo stlpca\n");
             bzero(buffer, 256);
             fgets(buffer, 255, stdin);
+            stlpec = atoi(buffer);
+            stlpec--;
             pthread_mutex_lock(d->mutex);
-            riadok = tah((int) buffer, 'Y', d->hraciaPlocha);
+            riadok = tah(stlpec, 'Y', d->hraciaPlocha);
             pthread_mutex_unlock(d->mutex);
             if (riadok == -1) {
                 error = 1;
@@ -91,18 +106,34 @@ void *priebehHry(void *data) {
                 printf("Zadaj ine cislo \n");
                 bzero(buffer, 256);
                 fgets(buffer, 255, stdin);
+                stlpec = atoi(buffer);
+                stlpec--;
                 pthread_mutex_lock(d->mutex);
-                riadok = tah((int) buffer, 'Y', d->hraciaPlocha);
+                riadok = tah(stlpec, 'Y', d->hraciaPlocha);
                 pthread_mutex_unlock(d->mutex);
                 if (riadok != -1) {
                     error = 0;
                     counter++;
                 }
             }
-//            vypis(d->hraciaPlocha,*d->newsockfd);
+//          vypis(d->hraciaPlocha,*d->newsockfd);
+            pomocnastlpec = stlpec;
+            pomocnariadok = riadok;
+            bzero(buffer, 256);
+            buffer[0] = pomocnastlpec;
+            buffer[1] = pomocnariadok;
+            buffer[2] = 'Y';
+            write(*d->newsockfd, buffer, 255);
+            for (int i = 0; i < 6; i++) {
+                for (int j = 0; j < 7; j++) {
+                    printf("%c ", *(*(d->hraciaPlocha + j) + i));
+                }
+                printf("\n");
+                printf("\n------------------------------------\n");
+            }
             pthread_mutex_lock(d->mutex);
             *d->koniecTahov = *d->koniecTahov + 1;
-            if (kontrolaVyhry(d->hraciaPlocha, (int) buffer, riadok)) {
+            if (kontrolaVyhry(d->hraciaPlocha, stlpec, riadok)) {
                 *d->vyherca = 1;
                 *d->hra = 1;
             }
