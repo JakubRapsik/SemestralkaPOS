@@ -14,7 +14,7 @@ bool kontrolaVyhry(char **hraciaPlocha, int globalstlpec, int globalriadok) {
         counter++;
         pomocnaStlpec = globalstlpec - 1;
         for (int i = 1; i < 3; ++i) {
-            if (pomocnaStlpec - 1 >= 0 && hraciaPlocha[pomocnaStlpec - i][globalriadok] == znak) {
+            if (pomocnaStlpec - i >= 0 && hraciaPlocha[pomocnaStlpec - i][globalriadok] == znak) {
                 counter++;
             }
         }
@@ -29,7 +29,7 @@ bool kontrolaVyhry(char **hraciaPlocha, int globalstlpec, int globalriadok) {
         counter++;
         pomocnaStlpec = globalstlpec + 1;
         for (int i = 1; i < 3; ++i) {
-            if (pomocnaStlpec + 1 <= 6 && hraciaPlocha[pomocnaStlpec + i][globalriadok] == znak) {
+            if (pomocnaStlpec + i <= 6 && hraciaPlocha[pomocnaStlpec + i][globalriadok] == znak) {
                 counter++;
             }
         }
@@ -44,7 +44,7 @@ bool kontrolaVyhry(char **hraciaPlocha, int globalstlpec, int globalriadok) {
         counter++;
         pomocnaRiadok = globalriadok - 1;
         for (int i = 1; i < 3; ++i) {
-            if (pomocnaRiadok - 1 >= 0 && hraciaPlocha[globalstlpec][pomocnaRiadok - i] == znak) {
+            if (pomocnaRiadok - i >= 0 && hraciaPlocha[globalstlpec][pomocnaRiadok - i] == znak) {
                 counter++;
             }
         }
@@ -59,7 +59,7 @@ bool kontrolaVyhry(char **hraciaPlocha, int globalstlpec, int globalriadok) {
         counter++;
         pomocnaRiadok = globalriadok + 1;
         for (int i = 1; i < 3; ++i) {
-            if (pomocnaRiadok + 1 <= 5 && hraciaPlocha[globalstlpec][pomocnaRiadok + i] == znak) {
+            if (pomocnaRiadok + i <= 5 && hraciaPlocha[globalstlpec][pomocnaRiadok + i] == znak) {
                 counter++;
             }
         }
@@ -75,7 +75,7 @@ bool kontrolaVyhry(char **hraciaPlocha, int globalstlpec, int globalriadok) {
         pomocnaRiadok = globalriadok - 1;
         pomocnaStlpec = globalstlpec - 1;
         for (int i = 1; i < 3; ++i) {
-            if (pomocnaRiadok - 1 >= 0 && pomocnaStlpec - 1 >= 0 &&
+            if (pomocnaRiadok - i >= 0 && pomocnaStlpec - 1 >= 0 &&
                 hraciaPlocha[pomocnaStlpec - i][pomocnaRiadok - i] == znak) {
                 counter++;
             }
@@ -92,7 +92,7 @@ bool kontrolaVyhry(char **hraciaPlocha, int globalstlpec, int globalriadok) {
         pomocnaRiadok = globalriadok + 1;
         pomocnaStlpec = globalstlpec - 1;
         for (int i = 1; i < 3; ++i) {
-            if (pomocnaRiadok + 1 <= 5 && pomocnaStlpec - 1 >= 0 &&
+            if (pomocnaRiadok + i <= 5 && pomocnaStlpec - 1 >= 0 &&
                 hraciaPlocha[pomocnaStlpec - i][pomocnaRiadok + i] == znak) {
                 counter++;
             }
@@ -110,7 +110,7 @@ bool kontrolaVyhry(char **hraciaPlocha, int globalstlpec, int globalriadok) {
         pomocnaRiadok = globalriadok + 1;
         pomocnaStlpec = globalstlpec + 1;
         for (int i = 1; i < 3; ++i) {
-            if (pomocnaRiadok + 1 <= 5 && pomocnaStlpec + 1 <= 6 &&
+            if (pomocnaRiadok + i <= 5 && pomocnaStlpec + 1 <= 6 &&
                 hraciaPlocha[pomocnaStlpec + i][pomocnaRiadok + i] == znak) {
                 counter++;
             }
@@ -127,7 +127,7 @@ bool kontrolaVyhry(char **hraciaPlocha, int globalstlpec, int globalriadok) {
         pomocnaRiadok = globalriadok - 1;
         pomocnaStlpec = globalstlpec + 1;
         for (int i = 1; i < 3; ++i) {
-            if (pomocnaRiadok - 1 >= 0 && pomocnaStlpec + 1 <= 6 &&
+            if (pomocnaRiadok - i >= 0 && pomocnaStlpec + 1 <= 6 &&
                 hraciaPlocha[pomocnaStlpec + i][pomocnaRiadok - i] == znak) {
                 counter++;
             }
