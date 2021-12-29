@@ -28,15 +28,20 @@ void *priebehHry(void *data) {
     int riadok = 0;
     int counter = 0;
     char buffer[256];
+    pthread_mutex_lock(d->mutex);
     while (*d->hra == 0) {
         while (*d->koniecTahov == 1) {
             pthread_cond_wait(d->aktualizovaneSkore, d->mutex);
         }
-
+        pthread_mutex_unlock(d->mutex);
         int error = -1;
         bzero(buffer, 256);
         read(*d->newsockfd, buffer, 255);
-        riadok = tah((int) buffer, 'X', d->hraciaPlocha);
+        int stlpec = atoi(buffer);
+        stlpec--;
+        pthread_mutex_lock(d->mutex);
+        riadok = tah(stlpec, 'X', d->hraciaPlocha);
+        pthread_mutex_unlock(d->mutex);
         if (riadok == -1) {
             error = 1;
         } else {
@@ -46,21 +51,38 @@ void *priebehHry(void *data) {
             const char *msg = "Zadaj nove cislo\n";
             write(*d->newsockfd, msg, strlen(msg) + 1);
             read(*d->newsockfd, buffer, 255);
+            pthread_mutex_lock(d->mutex);
             riadok = tah((int) buffer, 'X', d->hraciaPlocha);
+            pthread_mutex_unlock(d->mutex);
             if (riadok != -1) {
                 error = 0;
             }
         }
-//        vypis();
+//        vypis(d->hraciaPlocha,*d->newsockfd);
+        const char* msg;
+        pthread_mutex_lock(d->mutex);
+        for (int i = 0; i < 6; ++i) {
+            for (int j = 0; j < 7; ++j) {
+                msg = (*(d->hraciaPlocha + j) + i);
+                write(*d->newsockfd, msg, strlen(msg) + 1);
+                pthread_mutex_unlock(d->mutex);
+                printf("%d ", *(*(d->hraciaPlocha + j) + i));
+                pthread_mutex_lock(d->mutex);
+            }
+
+        }
         if (kontrolaVyhry(d->hraciaPlocha, (int) buffer, riadok)) {
             *d->vyherca = 0;
             *d->hra = 1;
         }
         if (*d->hra == 0) {
+            pthread_mutex_unlock(d->mutex);
             printf("Zadaj cislo stlpca\n");
             bzero(buffer, 256);
             fgets(buffer, 255, stdin);
+            pthread_mutex_lock(d->mutex);
             riadok = tah((int) buffer, 'Y', d->hraciaPlocha);
+            pthread_mutex_unlock(d->mutex);
             if (riadok == -1) {
                 error = 1;
             } else {
@@ -71,13 +93,16 @@ void *priebehHry(void *data) {
                 printf("Zadaj ine cislo \n");
                 bzero(buffer, 256);
                 fgets(buffer, 255, stdin);
+                pthread_mutex_lock(d->mutex);
                 riadok = tah((int) buffer, 'Y', d->hraciaPlocha);
+                pthread_mutex_unlock(d->mutex);
                 if (riadok != -1) {
                     error = 0;
                     counter++;
                 }
             }
-//        vypis();
+//            vypis(d->hraciaPlocha,*d->newsockfd);
+            pthread_mutex_lock(d->mutex);
             *d->koniecTahov = *d->koniecTahov + 1;
             if (kontrolaVyhry(d->hraciaPlocha, (int) buffer, riadok)) {
                 *d->vyherca = 1;
@@ -87,28 +112,31 @@ void *priebehHry(void *data) {
                 *d->hra = 2;
             }
         }
-
+        *d->koniecTahov = 0;
         pthread_cond_signal(d->koniecTahu);
     }
+    pthread_mutex_unlock(d->mutex);
     //Pridane prinf na vyhodnotenie
 }
 
 //Kory hrac dal viac zenotov vedla seba
 void *skoreHry(void *data) {
     DATA *d = data;
-
+    pthread_mutex_lock(d->mutex);
     while (*d->hra == 0) {
+
         while (*d->koniecTahov == 0) {
             pthread_cond_wait(d->koniecTahu, d->mutex);
         }
+
 //        *d->skoreKlient = skore('X', d->hraciaPlocha);
 //        *d->skoreServer = skore('Y', d->hraciaPlocha);
         printf("Skore uprava\n");
-        *d->koniecTahov = 0;
+        *d->koniecTahov = 1;
         pthread_cond_signal(d->aktualizovaneSkore);
 
     }
-
+    pthread_mutex_unlock(d->mutex);
 }
 
 
@@ -122,6 +150,28 @@ void *skoreHry(void *data) {
 
 int main(int argc, char *argv[]) {
     char hraciaPlocha[7][6];
+    for (int stlpec = 0; stlpec < 7; ++stlpec) {
+        for (int riadok = 0; riadok < 6; ++riadok) {
+            hraciaPlocha[stlpec][riadok] = 0;
+        }
+    }
+
+    // dynamically create an array of pointers of size `m`
+    int **arr = (int **)malloc(7 * sizeof(int *));
+
+    // dynamically allocate memory of size `n` for each row
+    for (int r = 0; r < 7; r++) {
+        arr[r] = (int *)malloc(6 * sizeof(int));
+    }
+
+    for (int i = 0; i < 7; i++)
+    {
+        for (int j = 0; j < 6; j++) {
+            arr[i][j] = 0;
+        }
+    }
+
+
     int sockfd, newsockfd;
     int skoreKlient = 0;
     int skoreServer = 0;
@@ -172,7 +222,7 @@ int main(int argc, char *argv[]) {
     pthread_cond_init(&aktualneSkore, NULL);
     pthread_cond_init(&koniecTahov, NULL);
 
-    DATA dataSpol = {hraciaPlocha, &newsockfd, &skoreKlient, &skoreServer, &koniectahov, &hra, &vyherca, &mutex,
+    DATA dataSpol = {arr, &newsockfd, &skoreKlient, &skoreServer, &koniectahov, &hra, &vyherca, &mutex,
                      &aktualneSkore,
                      &koniecTahov};
 
@@ -250,11 +300,17 @@ int main(int argc, char *argv[]) {
 //            hrac = 1;
 //        }
 //    }
+
+    for (int i = 0; i < 7; i++) {
+        free(arr[i]);
+    }
+    free(arr);
     pthread_mutex_destroy(&mutex);
     pthread_cond_destroy(&koniecTahov);
     pthread_cond_destroy(&aktualneSkore);
     close(newsockfd);
     close(sockfd);
+
 
     return 0;
 }
