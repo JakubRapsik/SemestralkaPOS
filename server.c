@@ -13,12 +13,12 @@ typedef struct data {
 } DATA;
 
 
-//void *klient(void *data) {
+//void *priebehHry(void *data) {
 //    DATA *d = data;
 //    int hra = 0;
 //    while (hra == 0) {
-//        while (koniectahu_klienta) {
-//            //Caka na signal od servera ze je dalsi tah
+//        while (koniectahu) {
+//            //Caka na signal od ze sa skore aktualizovalo
 //        }
 //
 //        int error = -1;
@@ -35,25 +35,9 @@ typedef struct data {
 //            if (tah(buffer, 'X') == 0) {
 //                error = 0;
 //            }
-//
-//        }
 //        vypis();
-//    }
-//
-//
-//    hra = 1;
-//    //sigranlizovat ze je koniec tahu klienta
-//}
-//
-//void *server(void *data) {
-//    DATA *d = data;
-//    int hra = 0;
-//    while (hra == 0) {
-//        while (koniectahu_servera) {
-//            //Caka na signal od klienta ze je na tahu
-//        }
-//
-//        int error = -1;
+//        if(kontrola()) {
+//        break;}
 //        printf("Zadaj cislo stlpca");
 //        bzero(buffer, 256);
 //        fgets(buffer, 255, stdin);
@@ -71,11 +55,42 @@ typedef struct data {
 //                error = 0;
 //            }
 //        }
+//          vypis();
+//          if(kontrola()) {
+//          break;}
+//
+//        }
 //        vypis();
-//        hra = 1;
-//        //sigranlizovat koniec tahu
 //    }
+//
+//
+//    hra = 1;
+//    //sigranlizovat ze je koniec tahu na prepocitanie skore
 //}
+
+//Kory hrac dal viac zenotov vedla seba
+//void *skore(void *data) {
+// DATA *d = data;
+// int hra = 0;
+//
+//
+//
+//
+//
+//
+//
+//
+// Signalizovat koniec aktualizacie skore
+// }
+
+
+
+//|00000000|
+//|00000000|
+//|00000000|
+//|00000000|
+//|0YYYXX00|
+
 
 int main(int argc, char *argv[]) {
     int sockfd, newsockfd;
