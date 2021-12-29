@@ -155,3 +155,8 @@ int tah(int stlpec, char hrac, char **hraciaPlocha) {
 int skore(char hrac, char **hraciaPlocha) {
 
 }
+
+
+void vypis(char **hraciaPlocha, int socket) {
+
+}
