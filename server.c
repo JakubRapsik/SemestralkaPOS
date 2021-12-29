@@ -78,9 +78,8 @@ void *priebehHry(void *data) {
                 printf("%c ", *(*(d->hraciaPlocha + j) + i));
             }
             printf("\n");
-            printf("\n------------------------------------\n");
         }
-
+        printf("\n------------------------------------\n");
 
         if (kontrolaVyhry(d->hraciaPlocha, stlpec, riadok)) {
             *d->vyherca = 0;
@@ -129,8 +128,9 @@ void *priebehHry(void *data) {
                     printf("%c ", *(*(d->hraciaPlocha + j) + i));
                 }
                 printf("\n");
-                printf("\n------------------------------------\n");
+
             }
+            printf("\n------------------------------------\n");
             pthread_mutex_lock(d->mutex);
             *d->koniecTahov = *d->koniecTahov + 1;
             if (kontrolaVyhry(d->hraciaPlocha, stlpec, riadok)) {
