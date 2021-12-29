@@ -1,11 +1,7 @@
 #include "hra.h"
 
-char hraciaPlocha[7][6];
-int globalstlpec = 0;
-int globalriadok = 0;
 
-
-bool kontrolaVyhry() {
+bool kontrolaVyhry(char **hraciaPlocha, int globalstlpec, int globalriadok) {
     int counter = 1;
     int pomocnaStlpec = 0;
     int pomocnaRiadok = 0;
@@ -142,30 +138,20 @@ bool kontrolaVyhry() {
     return false;
 }
 
-//int prehladavanie(int stlpec, int riadok , char znak) {
-//    int counter = 2;
-//    for (int i = 1; i < 3; ++i) {
-//        if (stlpec + 1 <= 6 && hraciaPlocha[stlpec + i][riadok] == znak) {
-//            counter++;
-//        }
-//    }
-//
-//}
-
-int tah(int stlpec, char hrac) {
+int tah(int stlpec, char hrac, char **hraciaPlocha) {
     for (int riadky = 5; riadky >= 0; riadky--) {
         if (stlpec - 1 >= 0 && stlpec + 1 <= 6 && riadky - 1 >= 0 && riadky + 1 <= 5) {
             if (hraciaPlocha[stlpec][riadky] == 0) {
                 hraciaPlocha[stlpec][riadky] = hrac;
-                globalriadok = riadky;
-                globalstlpec = stlpec;
-                return 0;
+                return riadky;
             }
         } else {
-            return 1;
+            return -1;
         }
     }
-    return 1;
+    return -1;
 }
 
+int skore(char hrac, char **hraciaPlocha) {
 
+}
