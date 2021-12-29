@@ -9,6 +9,13 @@
 
 int main(int argc, char *argv[]) {
 
+    char arr[7][6];
+
+    for (int i = 0; i < 7; i++) {
+        for (int j = 0; j < 6; j++) {
+            arr[i][j] = 'O';
+        }
+    }
 
     int sockfd, n;
     struct sockaddr_in serv_addr;
@@ -48,7 +55,15 @@ int main(int argc, char *argv[]) {
         return 4;
     }
     int hra = 0;
-    while (hra == 0) {
+    char stlpec;
+    char riadok;
+    char hrac;
+    while (1) {
+        if (strcmp(koniec, buffer) == 0) {
+            hra = 1;
+            printf("tu");
+            break;
+        }
         printf("Zadajte cislo stplca kde padne zeton: ");
         bzero(buffer, 256);
         fgets(buffer, 255, stdin);
@@ -58,19 +73,59 @@ int main(int argc, char *argv[]) {
             perror("Chyba pri poslati spravy na server");
             return 5;
         }
+        int zadane = 0;
+        while (zadane != 1) {
+            bzero(buffer, 256);
+            n = read(sockfd, buffer, 255);
+            if (n < 0) {
+                perror("Chyba pri prijmani spravi zo servera");
+                return 6;
+            }
+            if (buffer[4] != 0) {
+                printf("%s\n", buffer);
+                bzero(buffer, 256);
+                fgets(buffer, 255, stdin);
+                write(sockfd, buffer, strlen(buffer));
 
-        bzero(buffer, 256);
+            } else {
+                stlpec = buffer[0];
+                riadok = buffer[1];
+                hrac = buffer[2];
+
+                *(*(arr + stlpec) + riadok) = hrac;
+
+                for (int i = 0; i < 6; i++) {
+                    for (int j = 0; j < 7; j++) {
+                        printf("%c ", *(*(arr + j) + i));
+                    }
+                    printf("\n");
+                }
+                zadane = 1;
+            }
+
+        }
+
+
+        printf("\n------------------------------------\n");
         n = read(sockfd, buffer, 255);
         if (n < 0) {
             perror("Chyba pri prijmani spravi zo servera");
             return 6;
         }
+        stlpec = buffer[0];
+        riadok = buffer[1];
+        hrac = buffer[2];
 
-        printf("%s\n", buffer);
-        if (strcmp(koniec, buffer) == 0) {
-            hra = 1;
-            printf("tu");
+        *(*(arr + stlpec) + riadok) = hrac;
+
+        for (int i = 0; i < 6; i++) {
+            for (int j = 0; j < 7; j++) {
+                printf("%c ", *(*(arr + j) + i));
+            }
+            printf("\n");
         }
+        printf("\n------------------------------------\n");
+
     }
 
     close(sockfd);
