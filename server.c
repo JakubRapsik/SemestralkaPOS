@@ -141,7 +141,7 @@ void *priebehHry(void *data) {
                 *d->hra = 2;
             }
         }
-        *d->koniecTahov = 0;
+        *d->koniecTahov = 1;
         pthread_cond_signal(d->koniecTahu);
     }
     pthread_mutex_unlock(d->mutex);
@@ -151,6 +151,8 @@ void *priebehHry(void *data) {
 //Kory hrac dal viac zenotov vedla seba
 void *skoreHry(void *data) {
     DATA *d = data;
+    int s1 = 0;
+    int s2 = 0;
     while (*d->hra == 0) {
         pthread_mutex_lock(d->mutex);
         while (*d->koniecTahov == 0) {
@@ -161,8 +163,12 @@ void *skoreHry(void *data) {
         *d->skoreServer = skore('Y', d->hraciaPlocha);
         pthread_mutex_unlock(d->mutex);
         printf("Skore uprava\n");
+        s1 = *d->skoreKlient;
+        s2 = *d->skoreServer;
+        printf("x skore %d\n",s1);
+        printf("y skore %d\n",s2);
         pthread_mutex_lock(d->mutex);
-        *d->koniecTahov = 1;
+        *d->koniecTahov = 0;
         pthread_mutex_unlock(d->mutex);
         pthread_cond_signal(d->aktualizovaneSkore);
     }
