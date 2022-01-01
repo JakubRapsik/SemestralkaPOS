@@ -432,6 +432,11 @@ int skore(char hrac, char **hraciaPlocha) {
     int pocet1 = 0;
     int pocet2 = 0;
     int pocet3 = 0;
+    int pocet4 = 0;
+    int pocet5 = 0;
+    int pocet6 = 0;
+    int pocet7 = 0;
+
     int pomocnaRiadok = 0;
     int pomocnaStlpec = 0;
     int pocetP = 0;
@@ -454,7 +459,7 @@ int skore(char hrac, char **hraciaPlocha) {
                 if (i + 1 <= 6 && pomocnaPlocha[i + 1][j] == hrac) {
                     pomocnaStlpec = i + 1;
                     pocetP++;
-                    for (int x = 1; x < 3; ++x) {
+                    for (int x = 1; x < 7; ++x) {
                         if (pomocnaStlpec + x <= 6 && pomocnaPlocha[pomocnaStlpec + x][j] == hrac) {
                             pocetP++;
                         }
@@ -465,7 +470,7 @@ int skore(char hrac, char **hraciaPlocha) {
                 if (j + 1 <= 5 && pomocnaPlocha[i][j + 1] == hrac) {
                     pocetD++;
                     pomocnaRiadok = j + 1;
-                    for (int x = 1; x < 3; ++x) {
+                    for (int x = 1; x < 7; ++x) {
                         if (pomocnaRiadok + x <= 5 && pomocnaPlocha[i][pomocnaRiadok + x] == hrac) {
                             pocetD++;
                         }
@@ -478,7 +483,7 @@ int skore(char hrac, char **hraciaPlocha) {
                     pocetPD++;
                     pomocnaRiadok = i + 1;
                     pomocnaStlpec = j + 1;
-                    for (int x = 1; x < 3; ++x) {
+                    for (int x = 1; x < 7; ++x) {
                         if (pomocnaRiadok + x <= 5 && pomocnaStlpec + x <= 6 &&
                             pomocnaPlocha[pomocnaStlpec + x][pomocnaRiadok + x] == hrac) {
                             pocetPD++;
@@ -495,6 +500,10 @@ int skore(char hrac, char **hraciaPlocha) {
                         case 0: pocet1++;break;
                         case 1: pocet2++;break;
                         case 2: pocet3++;break;
+                        case 3: pocet4++;break;
+                        case 4: pocet5++;break;
+                        case 5: pocet6++;break;
+                        case 6: pocet7++;break;
                         default: ;
                     }
                 }
@@ -507,6 +516,10 @@ int skore(char hrac, char **hraciaPlocha) {
                         case 0: pocet1++;break;
                         case 1: pocet2++;break;
                         case 2: pocet3++;break;
+                        case 3: pocet4++;break;
+                        case 4: pocet5++;break;
+                        case 5: pocet6++;break;
+                        case 6: pocet7++;break;
                         default: ;
                     }
                 }
@@ -518,6 +531,10 @@ int skore(char hrac, char **hraciaPlocha) {
                         case 0: pocet1++;break;
                         case 1: pocet2++;break;
                         case 2: pocet3++;break;
+                        case 3: pocet4++;break;
+                        case 4: pocet5++;break;
+                        case 5: pocet6++;break;
+                        case 6: pocet7++;break;
                         default: ;
                     }
 
@@ -530,6 +547,10 @@ int skore(char hrac, char **hraciaPlocha) {
                         case 0: pocet1++;break;
                         case 1: pocet2++;break;
                         case 2: pocet3++;break;
+                        case 3: pocet4++;break;
+                        case 4: pocet5++;break;
+                        case 5: pocet6++;break;
+                        case 6: pocet7++;break;
                         default: ;
                     }
                 }
@@ -542,6 +563,10 @@ int skore(char hrac, char **hraciaPlocha) {
                         case 0: pocet1++;break;
                         case 1: pocet2++;break;
                         case 2: pocet3++;break;
+                        case 3: pocet4++;break;
+                        case 4: pocet5++;break;
+                        case 5: pocet6++;break;
+                        case 6: pocet7++;break;
                         default: ;
                     }
                 }
@@ -553,6 +578,10 @@ int skore(char hrac, char **hraciaPlocha) {
                         case 0: pocet1++;break;
                         case 1: pocet2++;break;
                         case 2: pocet3++;break;
+                        case 3: pocet4++;break;
+                        case 4: pocet5++;break;
+                        case 5: pocet6++;break;
+                        case 6: pocet7++;break;
                         default: ;
                     }
                 }
@@ -565,6 +594,10 @@ int skore(char hrac, char **hraciaPlocha) {
                         case 0: pocet1++;break;
                         case 1: pocet2++;break;
                         case 2: pocet3++;break;
+                        case 3: pocet4++;break;
+                        case 4: pocet5++;break;
+                        case 5: pocet6++;break;
+                        case 6: pocet7++;break;
                         default: ;
                     }
                 }
@@ -576,6 +609,10 @@ int skore(char hrac, char **hraciaPlocha) {
                         case 0: pocet1++;break;
                         case 1: pocet2++;break;
                         case 2: pocet3++;break;
+                        case 3: pocet4++;break;
+                        case 4: pocet5++;break;
+                        case 5: pocet6++;break;
+                        case 6: pocet7++;break;
                         default: ;
                     }
                 }
@@ -588,6 +625,10 @@ int skore(char hrac, char **hraciaPlocha) {
                         case 0: pocet1++;break;
                         case 1: pocet2++;break;
                         case 2: pocet3++;break;
+                        case 3: pocet4++;break;
+                        case 4: pocet5++;break;
+                        case 5: pocet6++;break;
+                        case 6: pocet7++;break;
                         default: ;
                     }
                 }
@@ -599,13 +640,18 @@ int skore(char hrac, char **hraciaPlocha) {
                         case 0: pocet1++;break;
                         case 1: pocet2++;break;
                         case 2: pocet3++;break;
+                        case 3: pocet4++;break;
+                        case 4: pocet5++;break;
+                        case 5: pocet6++;break;
+                        case 6: pocet7++;break;
                         default: ;
                     }
                 }
             }
         }
     }
-    int vysledok = 1 * pocet1 + 4 * pocet2 + 6 * pocet3;
+    int vysledok = 1 * pocet1 + 4 * pocet2 + 6 * pocet3 +
+            8 * pocet4 + 10 * pocet5 + 12 * pocet6 + 14 * pocet7;
     return vysledok;
 }
 
