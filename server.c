@@ -28,7 +28,7 @@ void *priebehHry(void *data) {
     int riadok = 0;
     int stlpec = 0;
     int counter = 0;
-    char pomocnastlpec;
+     char pomocnastlpec;
     char pomocnariadok;
     char buffer[256];
     pthread_mutex_lock(d->mutex);
@@ -141,7 +141,7 @@ void *priebehHry(void *data) {
                 *d->hra = 2;
             }
         }
-        *d->koniecTahov = 0;
+        *d->koniecTahov = 1;
         pthread_cond_signal(d->koniecTahu);
     }
     pthread_mutex_unlock(d->mutex);
@@ -151,17 +151,24 @@ void *priebehHry(void *data) {
 //Kory hrac dal viac zenotov vedla seba
 void *skoreHry(void *data) {
     DATA *d = data;
+    int s1 = 0;
+    int s2 = 0;
     while (*d->hra == 0) {
-
+        pthread_mutex_lock(d->mutex);
         while (*d->koniecTahov == 0) {
+
             pthread_cond_wait(d->koniecTahu, d->mutex);
         }
-
-//      *d->skoreKlient = skore('X', d->hraciaPlocha);
-//      *d->skoreServer = skore('Y', d->hraciaPlocha);
+        *d->skoreKlient = skore('X', d->hraciaPlocha);
+        *d->skoreServer = skore('Y', d->hraciaPlocha);
+        pthread_mutex_unlock(d->mutex);
         printf("Skore uprava\n");
+        s1 = *d->skoreKlient;
+        s2 = *d->skoreServer;
+        printf("x skore %d\n",s1);
+        printf("y skore %d\n",s2);
         pthread_mutex_lock(d->mutex);
-        *d->koniecTahov = 1;
+        *d->koniecTahov = 0;
         pthread_mutex_unlock(d->mutex);
         pthread_cond_signal(d->aktualizovaneSkore);
     }
@@ -177,11 +184,9 @@ void *skoreHry(void *data) {
 
 
 int main(int argc, char *argv[]) {
-    char hraciaPlocha[7][6];
-    for (int stlpec = 0; stlpec < 7; ++stlpec) {
-        for (int riadok = 0; riadok < 6; ++riadok) {
-            hraciaPlocha[stlpec][riadok] = 0;
-        }
+    if (argc < 2) {
+        fprintf(stderr, "usage %s port\n", argv[0]);
+        return 1;
     }
 
     // dynamically create an array of pointers of size `m`
@@ -210,10 +215,7 @@ int main(int argc, char *argv[]) {
     int n;
     char buffer[256];
 
-    if (argc < 2) {
-        fprintf(stderr, "usage %s port\n", argv[0]);
-        return 1;
-    }
+
     bzero((char *) &serv_addr, sizeof(serv_addr));
     serv_addr.sin_family = AF_INET;
     serv_addr.sin_addr.s_addr = INADDR_ANY;
