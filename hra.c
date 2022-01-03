@@ -1,13 +1,10 @@
-#include <unistd.h>
-#include <string.h>
-#include <stdio.h>
 #include "hra.h"
 
 
 bool kontrolaVyhry(char **hraciaPlocha, int globalstlpec, int globalriadok) {
     int counter = 1;
-    int pomocnaStlpec = 0;
-    int pomocnaRiadok = 0;
+    int pomocnaStlpec;
+    int pomocnaRiadok;
     char znak = hraciaPlocha[globalstlpec][globalriadok];
     //Lavo
     if (globalstlpec - 1 >= 0 && hraciaPlocha[globalstlpec - 1][globalriadok] == znak) {
@@ -17,11 +14,6 @@ bool kontrolaVyhry(char **hraciaPlocha, int globalstlpec, int globalriadok) {
             if (pomocnaStlpec - i >= 0 && hraciaPlocha[pomocnaStlpec - i][globalriadok] == znak) {
                 counter++;
             }
-        }
-        if (counter == 4) {
-            return true;
-        } else {
-            counter = 1;
         }
     }
     //Pravo
@@ -33,11 +25,12 @@ bool kontrolaVyhry(char **hraciaPlocha, int globalstlpec, int globalriadok) {
                 counter++;
             }
         }
-        if (counter == 4) {
-            return true;
-        } else {
-            counter = 1;
-        }
+
+    }
+    if (counter >= 4) {
+        return true;
+    } else {
+        counter = 1;
     }
     //Hore
     if (globalriadok - 1 >= 0 && hraciaPlocha[globalstlpec][globalriadok - 1] == znak) {
@@ -47,11 +40,6 @@ bool kontrolaVyhry(char **hraciaPlocha, int globalstlpec, int globalriadok) {
             if (pomocnaRiadok - i >= 0 && hraciaPlocha[globalstlpec][pomocnaRiadok - i] == znak) {
                 counter++;
             }
-        }
-        if (counter == 4) {
-            return true;
-        } else {
-            counter = 1;
         }
     }
     //Dole
@@ -63,11 +51,12 @@ bool kontrolaVyhry(char **hraciaPlocha, int globalstlpec, int globalriadok) {
                 counter++;
             }
         }
-        if (counter == 4) {
-            return true;
-        } else {
-            counter = 1;
-        }
+
+    }
+    if (counter >= 4) {
+        return true;
+    } else {
+        counter = 1;
     }
     //LavoHore
     if (globalstlpec - 1 >= 0 && globalriadok - 1 >= 0 && hraciaPlocha[globalstlpec - 1][globalriadok - 1] == znak) {
@@ -80,29 +69,6 @@ bool kontrolaVyhry(char **hraciaPlocha, int globalstlpec, int globalriadok) {
                 counter++;
             }
         }
-        if (counter == 4) {
-            return true;
-        } else {
-            counter = 1;
-        }
-    }
-    //LavoDole
-    if (globalstlpec - 1 >= 0 && globalriadok + 1 <= 5 && hraciaPlocha[globalstlpec - 1][globalriadok + 1] == znak) {
-        counter++;
-        pomocnaRiadok = globalriadok + 1;
-        pomocnaStlpec = globalstlpec - 1;
-        for (int i = 1; i < 3; ++i) {
-            if (pomocnaRiadok + i <= 5 && pomocnaStlpec - i >= 0 &&
-                hraciaPlocha[pomocnaStlpec - i][pomocnaRiadok + i] == znak) {
-                counter++;
-            }
-        }
-        if (counter == 4) {
-            return true;
-        } else {
-            counter = 1;
-        }
-
     }
     //PravoDole
     if (globalstlpec + 1 <= 6 && globalriadok + 1 <= 5 && hraciaPlocha[globalstlpec + 1][globalriadok + 1] == znak) {
@@ -115,12 +81,27 @@ bool kontrolaVyhry(char **hraciaPlocha, int globalstlpec, int globalriadok) {
                 counter++;
             }
         }
-        if (counter == 4) {
-            return true;
-        } else {
-            counter = 1;
-        }
+
     }
+    if (counter >= 4) {
+        return true;
+    } else {
+        counter = 1;
+    }
+    //LavoDole
+    if (globalstlpec - 1 >= 0 && globalriadok + 1 <= 5 && hraciaPlocha[globalstlpec - 1][globalriadok + 1] == znak) {
+        counter++;
+        pomocnaRiadok = globalriadok + 1;
+        pomocnaStlpec = globalstlpec - 1;
+        for (int i = 1; i < 3; ++i) {
+            if (pomocnaRiadok + i <= 5 && pomocnaStlpec - i >= 0 &&
+                hraciaPlocha[pomocnaStlpec - i][pomocnaRiadok + i] == znak) {
+                counter++;
+            }
+        }
+
+    }
+
     //PravoHore
     if (globalstlpec + 1 <= 6 && globalriadok - 1 >= 0 && hraciaPlocha[globalstlpec + 1][globalriadok - 1] == znak) {
         counter++;
@@ -132,136 +113,15 @@ bool kontrolaVyhry(char **hraciaPlocha, int globalstlpec, int globalriadok) {
                 counter++;
             }
         }
-        if (counter == 4) {
-            return true;
-        } else {
-            counter = 1;
-        }
+
+    }
+    if (counter >= 4) {
+        return true;
+    } else {
+        counter = 1;
     }
     return false;
 }
-
-//bool kontrolaVyhry(char **hraciaPlocha, int globalstlpec, int globalriadok) {
-//    int counter = 1;
-//    int pomocnaStlpec = 0;
-//    int pomocnaRiadok = 0;
-//    char znak = hraciaPlocha[globalstlpec][globalriadok];
-//    //Lavo
-//    if (globalstlpec - 1 >= 0 && hraciaPlocha[globalstlpec - 1][globalriadok] == znak) {
-//        counter++;
-//        pomocnaStlpec = globalstlpec - 1;
-//        for (int i = 1; i < 3; ++i) {
-//            if (pomocnaStlpec - i >= 0 && hraciaPlocha[pomocnaStlpec - i][globalriadok] == znak) {
-//                counter++;
-//            }
-//        }
-//    }
-//    //Pravo
-//    if (globalstlpec + 1 <= 6 && hraciaPlocha[globalstlpec + 1][globalriadok] == znak) {
-//        counter++;
-//        pomocnaStlpec = globalstlpec + 1;
-//        for (int i = 1; i < 3; ++i) {
-//            if (pomocnaStlpec + i <= 6 && hraciaPlocha[pomocnaStlpec + i][globalriadok] == znak) {
-//                counter++;
-//            }
-//        }
-//
-//    }
-//    if (counter >= 4) {
-//        return true;
-//    } else {
-//        counter = 1;
-//    }
-//    //Hore
-//    if (globalriadok - 1 >= 0 && hraciaPlocha[globalstlpec][globalriadok - 1] == znak) {
-//        counter++;
-//        pomocnaRiadok = globalriadok - 1;
-//        for (int i = 1; i < 3; ++i) {
-//            if (pomocnaRiadok - i >= 0 && hraciaPlocha[globalstlpec][pomocnaRiadok - i] == znak) {
-//                counter++;
-//            }
-//        }
-//    }
-//    //Dole
-//    if (globalriadok + 1 <= 5 && hraciaPlocha[globalstlpec][globalriadok + 1] == znak) {
-//        counter++;
-//        pomocnaRiadok = globalriadok + 1;
-//        for (int i = 1; i < 3; ++i) {
-//            if (pomocnaRiadok + i <= 5 && hraciaPlocha[globalstlpec][pomocnaRiadok + i] == znak) {
-//                counter++;
-//            }
-//        }
-//
-//    }
-//    if (counter >= 4) {
-//        return true;
-//    } else {
-//        counter = 1;
-//    }
-//    //LavoHore
-//    if (globalstlpec - 1 >= 0 && globalriadok - 1 >= 0 && hraciaPlocha[globalstlpec - 1][globalriadok - 1] == znak) {
-//        counter++;
-//        pomocnaRiadok = globalriadok - 1;
-//        pomocnaStlpec = globalstlpec - 1;
-//        for (int i = 1; i < 3; ++i) {
-//            if (pomocnaRiadok - i >= 0 && pomocnaStlpec - i >= 0 &&
-//                hraciaPlocha[pomocnaStlpec - i][pomocnaRiadok - i] == znak) {
-//                counter++;
-//            }
-//        }
-//    }
-//    //PravoDole
-//    if (globalstlpec + 1 <= 6 && globalriadok + 1 <= 5 && hraciaPlocha[globalstlpec + 1][globalriadok + 1] == znak) {
-//        counter++;
-//        pomocnaRiadok = globalriadok + 1;
-//        pomocnaStlpec = globalstlpec + 1;
-//        for (int i = 1; i < 3; ++i) {
-//            if (pomocnaRiadok + i <= 5 && pomocnaStlpec + i <= 6 &&
-//                hraciaPlocha[pomocnaStlpec + i][pomocnaRiadok + i] == znak) {
-//                counter++;
-//            }
-//        }
-//
-//    }
-//    if (counter >= 4) {
-//        return true;
-//    } else {
-//        counter = 1;
-//    }
-//    //LavoDole
-//    if (globalstlpec - 1 >= 0 && globalriadok + 1 <= 5 && hraciaPlocha[globalstlpec - 1][globalriadok + 1] == znak) {
-//        counter++;
-//        pomocnaRiadok = globalriadok + 1;
-//        pomocnaStlpec = globalstlpec - 1;
-//        for (int i = 1; i < 3; ++i) {
-//            if (pomocnaRiadok + i <= 5 && pomocnaStlpec - i >= 0 &&
-//                hraciaPlocha[pomocnaStlpec - i][pomocnaRiadok + i] == znak) {
-//                counter++;
-//            }
-//        }
-//
-//    }
-//
-//    //PravoHore
-//    if (globalstlpec + 1 <= 6 && globalriadok - 1 >= 0 && hraciaPlocha[globalstlpec + 1][globalriadok - 1] == znak) {
-//        counter++;
-//        pomocnaRiadok = globalriadok - 1;
-//        pomocnaStlpec = globalstlpec + 1;
-//        for (int i = 1; i < 3; ++i) {
-//            if (pomocnaRiadok - i >= 0 && pomocnaStlpec + i <= 6 &&
-//                hraciaPlocha[pomocnaStlpec + i][pomocnaRiadok - i] == znak) {
-//                counter++;
-//            }
-//        }
-//
-//    }
-//    if (counter >= 4) {
-//        return true;
-//    } else {
-//        counter = 1;
-//    }
-//    return false;
-//}
 
 int tah(int stlpec, char hrac, char **hraciaPlocha) {
     for (int riadky = 5; riadky >= 0; riadky--) {
@@ -437,11 +297,11 @@ int skore(char hrac, char **hraciaPlocha) {
     int pocet6 = 0;
     int pocet7 = 0;
 
-    int pomocnaRiadok = 0;
-    int pomocnaStlpec = 0;
-    int pocetP = 0;
-    int pocetD = 0;
-    int pocetPD = 0;
+    int pomocnaRiadok;
+    int pomocnaStlpec;
+    int pocetP;
+    int pocetD;
+    int pocetPD;
     char pomocnaPlocha[7][6];
     for (int stlpec = 0; stlpec < 7; ++stlpec) {
         for (int riadok = 0; riadok < 6; ++riadok) {
@@ -459,10 +319,15 @@ int skore(char hrac, char **hraciaPlocha) {
                 if (i + 1 <= 6 && pomocnaPlocha[i + 1][j] == hrac) {
                     pomocnaStlpec = i + 1;
                     pocetP++;
-                    for (int x = 1; x < 7; ++x) {
+                    for (int x = 1; x < 6; ++x) {
+                        if (pomocnaStlpec + x <= 6 && pomocnaPlocha[pomocnaStlpec + x][j] == 'O'){
+                            break;
+                        }
+
                         if (pomocnaStlpec + x <= 6 && pomocnaPlocha[pomocnaStlpec + x][j] == hrac) {
                             pocetP++;
                         }
+
                     }
                 }
 
@@ -470,7 +335,11 @@ int skore(char hrac, char **hraciaPlocha) {
                 if (j + 1 <= 5 && pomocnaPlocha[i][j + 1] == hrac) {
                     pocetD++;
                     pomocnaRiadok = j + 1;
-                    for (int x = 1; x < 7; ++x) {
+                    for (int x = 1; x < 6; ++x) {
+                        if  (pomocnaRiadok + x <= 5 && pomocnaPlocha[i][pomocnaRiadok + x] == 'O'){
+                            break;
+                        }
+
                         if (pomocnaRiadok + x <= 5 && pomocnaPlocha[i][pomocnaRiadok + x] == hrac) {
                             pocetD++;
                         }
@@ -483,7 +352,12 @@ int skore(char hrac, char **hraciaPlocha) {
                     pocetPD++;
                     pomocnaRiadok = i + 1;
                     pomocnaStlpec = j + 1;
-                    for (int x = 1; x < 7; ++x) {
+                    for (int x = 1; x < 6; ++x) {
+                        if(pomocnaRiadok + x <= 5 && pomocnaStlpec + x <= 6 &&
+                           pomocnaPlocha[pomocnaStlpec + x][pomocnaRiadok + x] == 'O'){
+                            break;
+                        }
+
                         if (pomocnaRiadok + x <= 5 && pomocnaStlpec + x <= 6 &&
                             pomocnaPlocha[pomocnaStlpec + x][pomocnaRiadok + x] == hrac) {
                             pocetPD++;
@@ -492,11 +366,11 @@ int skore(char hrac, char **hraciaPlocha) {
 
                 }
 
-                if(pocetP == pocetPD && pocetP == pocetD){
+                if(pocetD == pocetPD && pocetD == pocetP){
                     for (int x = 1; x <= pocetD; ++x) {
-                        pomocnaPlocha[i + x][j] = 'O';
+                        pomocnaPlocha[i][j + x] = 'O';
                     }
-                    switch (pocetP) {
+                    switch (pocetD) {
                         case 0: pocet1++;break;
                         case 1: pocet2++;break;
                         case 2: pocet3++;break;
@@ -524,7 +398,7 @@ int skore(char hrac, char **hraciaPlocha) {
                     }
                 }
                 if(pocetPD > pocetD && pocetPD > pocetP){
-                    for (int x = 1; x <= pocetD; ++x) {
+                    for (int x = 1; x <= pocetPD; ++x) {
                         pomocnaPlocha[i + x][j + x] = 'O';
                     }
                     switch (pocetPD) {
@@ -540,7 +414,7 @@ int skore(char hrac, char **hraciaPlocha) {
 
                 }
                 if(pocetP > pocetPD && pocetP > pocetD){
-                    for (int x = 1; x <= pocetD; ++x) {
+                    for (int x = 1; x <= pocetP; ++x) {
                         pomocnaPlocha[i + x][j] = 'O';
                     }
                     switch (pocetP) {
@@ -556,7 +430,7 @@ int skore(char hrac, char **hraciaPlocha) {
                 }
 
                 if(pocetP > pocetPD && pocetP == pocetD){
-                    for (int x = 1; x <= pocetD; ++x) {
+                    for (int x = 1; x <= pocetP; ++x) {
                         pomocnaPlocha[i + x][j] = 'O';
                     }
                     switch (pocetP) {
@@ -571,7 +445,7 @@ int skore(char hrac, char **hraciaPlocha) {
                     }
                 }
                 if(pocetP == pocetPD && pocetP > pocetD){
-                    for (int x = 1; x <= pocetD; ++x) {
+                    for (int x = 1; x <= pocetP; ++x) {
                         pomocnaPlocha[i + x][j] = 'O';
                     }
                     switch (pocetP) {
@@ -585,6 +459,8 @@ int skore(char hrac, char **hraciaPlocha) {
                         default: ;
                     }
                 }
+
+
 
                 if(pocetD > pocetPD && pocetD == pocetP){
                     for (int x = 1; x <= pocetD; ++x) {
@@ -617,8 +493,9 @@ int skore(char hrac, char **hraciaPlocha) {
                     }
                 }
 
+
                 if(pocetPD > pocetD && pocetPD == pocetP){
-                    for (int x = 1; x <= pocetD; ++x) {
+                    for (int x = 1; x <= pocetPD; ++x) {
                         pomocnaPlocha[i + x][j + x] = 'O';
                     }
                     switch (pocetPD) {
@@ -633,7 +510,7 @@ int skore(char hrac, char **hraciaPlocha) {
                     }
                 }
                 if(pocetPD == pocetD && pocetPD > pocetP){
-                    for (int x = 1; x <= pocetD; ++x) {
+                    for (int x = 1; x <= pocetPD; ++x) {
                         pomocnaPlocha[i + x][j + x] = 'O';
                     }
                     switch (pocetPD) {
