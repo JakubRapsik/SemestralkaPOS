@@ -145,12 +145,6 @@ int skore(char hrac, char **hraciaPlocha) {
     int pocet5 = 0;
     int pocet6 = 0;
     int pocet7 = 0;
-    char pomochrac;
-    if(hrac == 'X') {
-        pomochrac = 'Y';
-    } else {
-        pomochrac = 'X';
-    }
 
     int pomocnaRiadok;
     int pomocnaStlpec;
@@ -205,8 +199,8 @@ int skore(char hrac, char **hraciaPlocha) {
                 //PravoDole
                 if (i + 1 <= 6 && j + 1 <= 5 && pomocnaPlocha[i + 1][j + 1] == hrac) {
                     pocetPD++;
-                    pomocnaRiadok = i + 1;
-                    pomocnaStlpec = j + 1;
+                    pomocnaRiadok = j + 1;
+                    pomocnaStlpec = i + 1;
                     for (int x = 1; x < 6; ++x) {
                         if(pomocnaRiadok + x <= 5 && pomocnaStlpec + x <= 6 &&
                            pomocnaPlocha[pomocnaStlpec + x][pomocnaRiadok + x] != hrac){
