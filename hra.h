@@ -6,11 +6,7 @@
 
 #include <stdbool.h>
 
-int prehladavanie(int stlpec, int riadok, char znak);
-
 int tah(int stlpec, char hrac, char **hraciaPlocha);
-
-void vypis(char **hraciaPlocha, int socket);
 
 bool kontrolaVyhry(char **hraciaPlocha, int globalstlpec, int globalriadok);
 

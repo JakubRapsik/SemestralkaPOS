@@ -25,19 +25,31 @@ typedef struct data {
 
 void *priebehHry(void *data) {
     DATA *d = data;
-    int riadok = 0;
-    int stlpec = 0;
+    int riadok;
+    int stlpec;
     int counter = 0;
-     char pomocnastlpec;
+    int s1;
+    int s2;
+    char pomocnastlpec;
     char pomocnariadok;
     char buffer[256];
     pthread_mutex_lock(d->mutex);
     while (*d->hra == 0) {
         while (*d->koniecTahov == 1) {
             pthread_cond_wait(d->aktualizovaneSkore, d->mutex);
+            pthread_mutex_unlock(d->mutex);
+            s1 = *d->skoreKlient;
+            s2 = *d->skoreServer;
+            printf("x skore %d\n", s1);
+            printf("y skore %d\n", s2);
+            bzero(buffer, 256);
+            buffer[0] = s1;
+            buffer[1] = s2;
+            write(*d->newsockfd, buffer, 255);
+            pthread_mutex_lock(d->mutex);
         }
         pthread_mutex_unlock(d->mutex);
-        int error = -1;
+        int error;
         bzero(buffer, 256);
         read(*d->newsockfd, buffer, 255);
         stlpec = atoi(buffer);
@@ -65,7 +77,6 @@ void *priebehHry(void *data) {
                 error = 0;
             }
         }
-//      vypis(d->hraciaPlocha,*d->newsockfd);
         pomocnastlpec = stlpec;
         pomocnariadok = riadok;
         bzero(buffer, 256);
@@ -84,6 +95,16 @@ void *priebehHry(void *data) {
         if (kontrolaVyhry(d->hraciaPlocha, stlpec, riadok)) {
             *d->vyherca = 0;
             *d->hra = 1;
+            bzero(buffer, 256);
+            strcpy(buffer, "koniec");
+            write(*d->newsockfd, buffer, 255);
+            pthread_mutex_lock(d->mutex);
+        } else {
+            pthread_mutex_unlock(d->mutex);
+            bzero(buffer, 256);
+            strcpy(buffer, "pokracuje");
+            write(*d->newsockfd, buffer, 255);
+            pthread_mutex_lock(d->mutex);
         }
         if (*d->hra == 0) {
             pthread_mutex_unlock(d->mutex);
@@ -115,7 +136,6 @@ void *priebehHry(void *data) {
                     counter++;
                 }
             }
-//          vypis(d->hraciaPlocha,*d->newsockfd);
             pomocnastlpec = stlpec;
             pomocnariadok = riadok;
             bzero(buffer, 256);
@@ -136,23 +156,36 @@ void *priebehHry(void *data) {
             if (kontrolaVyhry(d->hraciaPlocha, stlpec, riadok)) {
                 *d->vyherca = 1;
                 *d->hra = 1;
-            }
-            if (counter == 21) {
+                pthread_mutex_unlock(d->mutex);
+                bzero(buffer, 256);
+                strcpy(buffer, "koniec");
+                write(*d->newsockfd, buffer, 255);
+                pthread_mutex_lock(d->mutex);
+            } else if (counter == 21) {
                 *d->hra = 2;
+                pthread_mutex_unlock(d->mutex);
+                bzero(buffer, 256);
+                strcpy(buffer, "koniec");
+                write(*d->newsockfd, buffer, 255);
+                pthread_mutex_lock(d->mutex);
+            } else {
+                pthread_mutex_unlock(d->mutex);
+                bzero(buffer, 256);
+                strcpy(buffer, "pokracuje");
+                write(*d->newsockfd, buffer, 255);
+                pthread_mutex_lock(d->mutex);
             }
+
+
         }
         *d->koniecTahov = 1;
         pthread_cond_signal(d->koniecTahu);
     }
     pthread_mutex_unlock(d->mutex);
-    //Pridane prinf na vyhodnotenie
 }
 
-//Kory hrac dal viac zenotov vedla seba
 void *skoreHry(void *data) {
     DATA *d = data;
-    int s1 = 0;
-    int s2 = 0;
     while (*d->hra == 0) {
         pthread_mutex_lock(d->mutex);
         while (*d->koniecTahov == 0) {
@@ -161,13 +194,6 @@ void *skoreHry(void *data) {
         }
         *d->skoreKlient = skore('X', d->hraciaPlocha);
         *d->skoreServer = skore('Y', d->hraciaPlocha);
-        pthread_mutex_unlock(d->mutex);
-        printf("Skore uprava\n");
-        s1 = *d->skoreKlient;
-        s2 = *d->skoreServer;
-        printf("x skore %d\n",s1);
-        printf("y skore %d\n",s2);
-        pthread_mutex_lock(d->mutex);
         *d->koniecTahov = 0;
         pthread_mutex_unlock(d->mutex);
         pthread_cond_signal(d->aktualizovaneSkore);
@@ -212,7 +238,6 @@ int main(int argc, char *argv[]) {
     int vyherca = -1;
     socklen_t cli_len;
     struct sockaddr_in serv_addr, cli_addr;
-    int n;
     char buffer[256];
 
 
@@ -265,27 +290,27 @@ int main(int argc, char *argv[]) {
         const char *msg;
         const int *msg2;
         if (*dataSpol.vyherca == 0) {
-            msg = "Vyhral Hrac X pretoze ma styri rovnake v rade \n";
-            write(newsockfd, msg, strlen(msg) + 1);
-            msg = "Jeho skore bolo: ";
-            write(newsockfd, msg, strlen(msg) + 1);
-            msg2 = dataSpol.skoreKlient;
-            write(newsockfd, msg2, 3);
+            bzero(buffer, 256);
+            buffer[0] = 'X';
+            buffer[1] = *dataSpol.skoreKlient;
+            write(newsockfd, buffer, 255);
             printf("Vyhral Hrac X pretoze ma styri rovnake v rade \n");
             printf("Jeho skore bolo %d\n", *dataSpol.skoreKlient);
         }
         if (*dataSpol.vyherca == 1) {
-            msg = "Vyhral Hrac Y pretoze ma styri rovnake v rade \n";
-            write(newsockfd, msg, strlen(msg) + 1);
-            msg = "Jeho skore bolo: ";
-            write(newsockfd, msg, strlen(msg) + 1);
+            bzero(buffer, 256);
+            buffer[0] = 'Y';
+            buffer[1] = *dataSpol.skoreKlient;
+            write(newsockfd, buffer, 255);
             printf("Vyhral Hrac Y pretoze ma styri rovnake v rade\n");
             printf("Jeho skore bolo %d\n", *dataSpol.skoreServer);
         }
-        msg = "koniec";
-        write(newsockfd, msg, strlen(msg) + 1);
     }
     if (*dataSpol.hra == 2) {
+        bzero(buffer, 256);
+        buffer[0] = 'R';
+        buffer[1] = *dataSpol.skoreServer;
+        buffer[2] = *dataSpol.skoreKlient;
         printf("Remiza hra bola rozhodnuta na body\n");
         if (*dataSpol.skoreServer > *dataSpol.skoreKlient) {
             printf("Vyhral Hrac Y na body\n");
@@ -295,40 +320,6 @@ int main(int argc, char *argv[]) {
             printf("Jeho skore bolo %d\n", *dataSpol.skoreKlient);
         }
     }
-    //Vytvorenie thredov a ich joinovanie
-    //create a join
-    //Finalny vypis
-
-//    int hrac = 0;
-//    int a = 0;
-//    while (hrac == 0) {
-//        bzero(buffer, 256);
-//        n = read(newsockfd, buffer, 255);
-//        if (n < 0) {
-//            perror("Error reading from socket");
-//            return 4;
-//        }
-//
-//        printf("Here is the message: %s\n", buffer);
-//        const char *msg;
-//        if (a < 1) {
-//            msg = "ahoj";
-//
-//        } else if (a == 1) {
-//            msg = "viac ako 1";
-//        } else {
-//            msg = "koniec";
-//        }
-//        a++;
-//        n = write(newsockfd, msg, strlen(msg) + 1);
-//        if (n < 0) {
-//            perror("Error writing to socket");
-//            return 5;
-//        }
-//        if (a == 5) {
-//            hrac = 1;
-//        }
-//    }
 
     for (int i = 0; i < 7; i++) {
         free(arr[i]);
