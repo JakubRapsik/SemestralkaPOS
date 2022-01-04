@@ -54,16 +54,13 @@ int main(int argc, char *argv[]) {
         perror("Error connecting to socket");
         return 4;
     }
-    int hra = 0;
     char stlpec;
     char riadok;
     char hrac;
+    int skore1;
+    int skore2;
     while (1) {
-        if (strcmp(koniec, buffer) == 0) {
-            hra = 1;
-            printf("tu");
-            break;
-        }
+
         printf("Zadajte cislo stplca kde padne zeton: ");
         bzero(buffer, 256);
         fgets(buffer, 255, stdin);
@@ -107,6 +104,14 @@ int main(int argc, char *argv[]) {
 
 
         printf("\n------------------------------------\n");
+
+        bzero(buffer, 256);
+        read(sockfd, buffer, 255);
+        if (strcmp(koniec, buffer) == 0) {
+            break;
+        }
+
+        bzero(buffer, 256);
         n = read(sockfd, buffer, 255);
         if (n < 0) {
             perror("Chyba pri prijmani spravi zo servera");
@@ -125,7 +130,42 @@ int main(int argc, char *argv[]) {
             printf("\n");
         }
         printf("\n------------------------------------\n");
+        //skore
 
+        bzero(buffer, 256);
+        read(sockfd, buffer, 255);
+        if (strcmp(koniec, buffer) == 0) {
+            break;
+        }
+
+        bzero(buffer, 256);
+        read(sockfd, buffer, 255);
+        skore1 = buffer[0];
+        skore2 = buffer[1];
+        printf("x skore %d\n", skore1);
+        printf("y skore %d\n", skore2);
+
+    }
+    bzero(buffer, 256);
+    read(sockfd, buffer, 255);
+
+    if (buffer[0] == 'X') {
+        printf("Vyhral Hrac X pretoze ma styri rovnake v rade \n");
+        printf("Jeho skore bolo %d\n", buffer[1]);
+    }
+    if (buffer[0] == 'Y') {
+        printf("Vyhral Hrac Y pretoze ma styri rovnake v rade \n");
+        printf("Jeho skore bolo %d\n", buffer[1]);
+    }
+    if (buffer[0] == 'R') {
+        printf("Remiza hra bola rozhodnuta na body\n");
+        if (buffer[1] > buffer[2]) {
+            printf("Vyhral Hrac Y na body\n");
+            printf("Jeho skore bolo %d\n", buffer[1]);
+        } else {
+            printf("Vyhral Hrac X na body\n");
+            printf("Jeho skore bolo %d\n", buffer[2]);
+        }
     }
 
     close(sockfd);
