@@ -228,10 +228,8 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
-    // dynamically create an array of pointers of size `m`
     char **arr = (char **) malloc(7 * sizeof(char *));
 
-    // dynamically allocate memory of size `n` for each row
     for (int r = 0; r < 7; r++) {
         arr[r] = (char *) malloc(6 * sizeof(char));
     }
