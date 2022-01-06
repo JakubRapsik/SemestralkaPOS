@@ -37,8 +37,8 @@ void vypis(char stlpec, char riadok, char hrac, char **hraciaPlocha, int socket)
         printf("\n");
     }
     printf("------------------------------------\n");
-    printf("1 2 3 4 5 6 7");
-    printf("\n------------------------------------\n");
+    printf("1 2 3 4 5 6 7 \n");
+    printf("------------------------------------\n");
 }
 
 void *priebehHry(void *data) {
@@ -48,6 +48,7 @@ void *priebehHry(void *data) {
     int counter = 0;
     int s1;
     int s2;
+    int n;
     char pomocnastlpec;
     char pomocnariadok;
     char buffer[256];
@@ -70,66 +71,65 @@ void *priebehHry(void *data) {
         pthread_mutex_unlock(d->mutex);
         int error;
         bzero(buffer, 256);
-        read(*d->newsockfd, buffer, 255);
-        stlpec = atoi(buffer);
-        stlpec--;
-        pthread_mutex_lock(d->mutex);
-        riadok = tah(stlpec, 'X', d->hraciaPlocha);
-        pthread_mutex_unlock(d->mutex);
-        if (riadok == -1) {
-            error = 1;
+        n = read(*d->newsockfd, buffer, 255);
+        if (n <= 0) {
+            printf("Hrac sa odpojil hra skoncila");
+            *d->hra = 5;
         } else {
-            error = 0;
-        }
-        while (error != 0) {
-            bzero(buffer, 256);
-            strcpy(buffer, "Zadaj nove cislo: ");
-            write(*d->newsockfd, buffer, 255);
-            bzero(buffer, 256);
-            read(*d->newsockfd, buffer, 255);
             stlpec = atoi(buffer);
             stlpec--;
             pthread_mutex_lock(d->mutex);
             riadok = tah(stlpec, 'X', d->hraciaPlocha);
             pthread_mutex_unlock(d->mutex);
-            if (riadok != -1) {
-                error = 0;
-            }
-        }
-        pomocnastlpec = stlpec;
-        pomocnariadok = riadok;
-        pthread_mutex_lock(d->mutex);
-        vypis(pomocnastlpec, pomocnariadok, 'X', d->hraciaPlocha, *d->newsockfd);
-        if (kontrolaVyhry(d->hraciaPlocha, stlpec, riadok)) {
-            pthread_mutex_unlock(d->mutex);
-            *d->vyherca = 0;
-            *d->hra = 1;
-            bzero(buffer, 256);
-            strcpy(buffer, "koniec");
-            write(*d->newsockfd, buffer, 255);
-        } else {
-            pthread_mutex_unlock(d->mutex);
-            bzero(buffer, 256);
-            strcpy(buffer, "pokracuje");
-            write(*d->newsockfd, buffer, 255);
-        }
-        if (*d->hra == 0) {
-            printf("Zadaj cislo stlpca: ");
-            bzero(buffer, 256);
-            fgets(buffer, 255, stdin);
-            stlpec = atoi(buffer);
-            stlpec--;
-            pthread_mutex_lock(d->mutex);
-            riadok = tah(stlpec, 'Y', d->hraciaPlocha);
-            pthread_mutex_unlock(d->mutex);
             if (riadok == -1) {
                 error = 1;
             } else {
                 error = 0;
-                counter++;
             }
             while (error != 0) {
-                printf("Zadaj ine cislo: ");
+                bzero(buffer, 256);
+                strcpy(buffer, "Zadaj nove cislo: ");
+                write(*d->newsockfd, buffer, 255);
+                bzero(buffer, 256);
+                read(*d->newsockfd, buffer, 255);
+                stlpec = atoi(buffer);
+                stlpec--;
+                pthread_mutex_lock(d->mutex);
+                riadok = tah(stlpec, 'X', d->hraciaPlocha);
+                pthread_mutex_unlock(d->mutex);
+                if (riadok != -1) {
+                    error = 0;
+                }
+            }
+            pomocnastlpec = stlpec;
+            pomocnariadok = riadok;
+            pthread_mutex_lock(d->mutex);
+            vypis(pomocnastlpec, pomocnariadok, 'X', d->hraciaPlocha, *d->newsockfd);
+            if (kontrolaVyhry(d->hraciaPlocha, stlpec, riadok)) {
+                pthread_mutex_unlock(d->mutex);
+                *d->vyherca = 0;
+                *d->hra = 1;
+                if (recv(*d->newsockfd, buffer, sizeof(buffer), MSG_PEEK | MSG_DONTWAIT) == 0) {
+                    printf("Hrac sa odpojil hra skoncila");
+                    *d->hra = 5;
+                } else {
+                    bzero(buffer, 256);
+                    strcpy(buffer, "koniec");
+                    write(*d->newsockfd, buffer, 255);
+                }
+            } else {
+                pthread_mutex_unlock(d->mutex);
+                if (recv(*d->newsockfd, buffer, sizeof(buffer), MSG_PEEK | MSG_DONTWAIT) == 0) {
+                    printf("Hrac sa odpojil hra skoncila");
+                    *d->hra = 5;
+                } else {
+                    bzero(buffer, 256);
+                    strcpy(buffer, "pokracuje");
+                    write(*d->newsockfd, buffer, 255);
+                }
+            }
+            if (*d->hra == 0) {
+                printf("Zadaj cislo stlpca: ");
                 bzero(buffer, 256);
                 fgets(buffer, 255, stdin);
                 stlpec = atoi(buffer);
@@ -137,35 +137,65 @@ void *priebehHry(void *data) {
                 pthread_mutex_lock(d->mutex);
                 riadok = tah(stlpec, 'Y', d->hraciaPlocha);
                 pthread_mutex_unlock(d->mutex);
-                if (riadok != -1) {
+                if (riadok == -1) {
+                    error = 1;
+                } else {
                     error = 0;
                     counter++;
                 }
+                while (error != 0) {
+                    printf("Zadaj ine cislo: ");
+                    bzero(buffer, 256);
+                    fgets(buffer, 255, stdin);
+                    stlpec = atoi(buffer);
+                    stlpec--;
+                    pthread_mutex_lock(d->mutex);
+                    riadok = tah(stlpec, 'Y', d->hraciaPlocha);
+                    pthread_mutex_unlock(d->mutex);
+                    if (riadok != -1) {
+                        error = 0;
+                        counter++;
+                    }
+                }
+                pomocnastlpec = stlpec;
+                pomocnariadok = riadok;
+                pthread_mutex_lock(d->mutex);
+                vypis(pomocnastlpec, pomocnariadok, 'Y', d->hraciaPlocha, *d->newsockfd);
+                if (kontrolaVyhry(d->hraciaPlocha, stlpec, riadok)) {
+                    pthread_mutex_unlock(d->mutex);
+                    *d->vyherca = 1;
+                    *d->hra = 1;
+                    if (recv(*d->newsockfd, buffer, sizeof(buffer), MSG_PEEK | MSG_DONTWAIT) == 0) {
+                        printf("Hrac sa odpojil hra skoncila");
+                        *d->hra = 5;
+                    } else {
+                        bzero(buffer, 256);
+                        strcpy(buffer, "koniec");
+                        write(*d->newsockfd, buffer, 255);
+                    }
+                } else if (counter == 21) {
+                    pthread_mutex_unlock(d->mutex);
+                    *d->hra = 2;
+                    if (recv(*d->newsockfd, buffer, sizeof(buffer), MSG_PEEK | MSG_DONTWAIT) == 0) {
+                        printf("Hrac sa odpojil hra skoncila");
+                        *d->hra = 5;
+                    } else {
+                        bzero(buffer, 256);
+                        strcpy(buffer, "koniec");
+                        write(*d->newsockfd, buffer, 255);
+                    }
+                } else {
+                    pthread_mutex_unlock(d->mutex);
+                    if (recv(*d->newsockfd, buffer, sizeof(buffer), MSG_PEEK | MSG_DONTWAIT) == 0) {
+                        printf("Hrac sa odpojil hra skoncila");
+                        *d->hra = 5;
+                    } else {
+                        bzero(buffer, 256);
+                        strcpy(buffer, "pokracuje");
+                        write(*d->newsockfd, buffer, 255);
+                    }
+                }
             }
-            pomocnastlpec = stlpec;
-            pomocnariadok = riadok;
-            pthread_mutex_lock(d->mutex);
-            vypis(pomocnastlpec, pomocnariadok, 'Y', d->hraciaPlocha, *d->newsockfd);
-            if (kontrolaVyhry(d->hraciaPlocha, stlpec, riadok)) {
-                pthread_mutex_unlock(d->mutex);
-                *d->vyherca = 1;
-                *d->hra = 1;
-                bzero(buffer, 256);
-                strcpy(buffer, "koniec");
-                write(*d->newsockfd, buffer, 255);
-            } else if (counter == 21) {
-                pthread_mutex_unlock(d->mutex);
-                *d->hra = 2;
-                bzero(buffer, 256);
-                strcpy(buffer, "koniec");
-                write(*d->newsockfd, buffer, 255);
-            } else {
-                pthread_mutex_unlock(d->mutex);
-                bzero(buffer, 256);
-                strcpy(buffer, "pokracuje");
-                write(*d->newsockfd, buffer, 255);
-            }
-
 
         }
         pthread_mutex_lock(d->mutex);
