@@ -13,6 +13,7 @@ int main(int argc, char *argv[]) {
         fprintf(stderr, "usage %s hostname port\n", argv[0]);
         return 1;
     }
+
     char arr[7][6];
 
     for (int i = 0; i < 7; i++) {
@@ -20,11 +21,15 @@ int main(int argc, char *argv[]) {
             arr[i][j] = 'O';
         }
     }
+
     int sockfd, n;
     struct sockaddr_in serv_addr;
     struct hostent *server;
+
     char koniec[] = "koniec";
     char buffer[256];
+
+
     server = gethostbyname(argv[1]);
     if (server == NULL) {
         fprintf(stderr, "Error, no such host\n");
@@ -93,12 +98,12 @@ int main(int argc, char *argv[]) {
                     }
                     printf("\n");
                 }
+                printf("------------------------------------\n");
+                printf("1 2 3 4 5 6 7");
                 zadane = 1;
             }
 
         }
-
-
         printf("\n------------------------------------\n");
 
         bzero(buffer, 256);
@@ -125,6 +130,8 @@ int main(int argc, char *argv[]) {
             }
             printf("\n");
         }
+        printf("------------------------------------\n");
+        printf("1 2 3 4 5 6 7");
         printf("\n------------------------------------\n");
         //skore
 
@@ -139,7 +146,8 @@ int main(int argc, char *argv[]) {
         skore1 = buffer[0];
         skore2 = buffer[1];
         printf("x skore %d\n", skore1);
-        printf("y skore %d\n", skore2);
+        printf("y skore %d", skore2);
+        printf("\n------------------------------------\n");
 
     }
     bzero(buffer, 256);
