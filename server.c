@@ -9,7 +9,6 @@
 #include "hra.h"
 
 
-
 typedef struct data {
     char **hraciaPlocha;
     int *newsockfd;
@@ -228,19 +227,6 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
-    char **arr = (char **) malloc(7 * sizeof(char *));
-
-    for (int r = 0; r < 7; r++) {
-        arr[r] = (char *) malloc(6 * sizeof(char));
-    }
-
-    for (int i = 0; i < 7; i++) {
-        for (int j = 0; j < 6; j++) {
-            arr[i][j] = 'O';
-        }
-    }
-
-
     int sockfd, newsockfd;
     int skoreKlient = 0;
     int skoreServer = 0;
@@ -277,6 +263,17 @@ int main(int argc, char *argv[]) {
         return 3;
     }
     //Koniec pripojovania
+    char **arr = (char **) malloc(7 * sizeof(char *));
+
+    for (int r = 0; r < 7; r++) {
+        arr[r] = (char *) malloc(6 * sizeof(char));
+    }
+
+    for (int i = 0; i < 7; i++) {
+        for (int j = 0; j < 6; j++) {
+            arr[i][j] = 'O';
+        }
+    }
 
     pthread_t priebehhry, skore;
 
