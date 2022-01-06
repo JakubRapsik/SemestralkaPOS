@@ -9,6 +9,10 @@
 
 int main(int argc, char *argv[]) {
 
+    if (argc < 3) {
+        fprintf(stderr, "usage %s hostname port\n", argv[0]);
+        return 1;
+    }
     char arr[7][6];
 
     for (int i = 0; i < 7; i++) {
@@ -16,19 +20,11 @@ int main(int argc, char *argv[]) {
             arr[i][j] = 'O';
         }
     }
-
     int sockfd, n;
     struct sockaddr_in serv_addr;
     struct hostent *server;
-
     char koniec[] = "koniec";
     char buffer[256];
-
-    if (argc < 3) {
-        fprintf(stderr, "usage %s hostname port\n", argv[0]);
-        return 1;
-    }
-
     server = gethostbyname(argv[1]);
     if (server == NULL) {
         fprintf(stderr, "Error, no such host\n");
