@@ -9,6 +9,7 @@
 #include "hra.h"
 
 
+
 typedef struct data {
     char **hraciaPlocha;
     int *newsockfd;
