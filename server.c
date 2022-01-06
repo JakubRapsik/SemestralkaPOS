@@ -42,16 +42,6 @@ void vypis(char stlpec, char riadok, char hrac, char **hraciaPlocha, int socket)
     printf("------------------------------------\n");
 }
 
-int pripojenie(int socket, char *buffer) {
-
-    if (recv(socket, buffer, sizeof(buffer), MSG_PEEK | MSG_DONTWAIT) == 0) {
-        printf("Hrac sa odpojil hra skoncila");
-        return 1;
-    } else {
-        return 0;
-    }
-}
-
 void *priebehHry(void *data) {
     DATA *d = data;
     int riadok;
@@ -120,7 +110,8 @@ void *priebehHry(void *data) {
                 pthread_mutex_unlock(d->mutex);
                 *d->vyherca = 0;
                 *d->hra = 1;
-                if (pripojenie(*d->newsockfd, buffer) == 1) {
+                if (recv(*d->newsockfd, buffer, sizeof(buffer), MSG_PEEK | MSG_DONTWAIT) == 0) {
+                    printf("Hrac sa odpojil hra skoncila");
                     *d->hra = 5;
                 } else {
                     bzero(buffer, 256);
@@ -129,7 +120,8 @@ void *priebehHry(void *data) {
                 }
             } else {
                 pthread_mutex_unlock(d->mutex);
-                if (pripojenie(*d->newsockfd, buffer) == 1) {
+                if (recv(*d->newsockfd, buffer, sizeof(buffer), MSG_PEEK | MSG_DONTWAIT) == 0) {
+                    printf("Hrac sa odpojil hra skoncila");
                     *d->hra = 5;
                 } else {
                     bzero(buffer, 256);
@@ -174,7 +166,8 @@ void *priebehHry(void *data) {
                     pthread_mutex_unlock(d->mutex);
                     *d->vyherca = 1;
                     *d->hra = 1;
-                    if (pripojenie(*d->newsockfd, buffer) == 1) {
+                    if (recv(*d->newsockfd, buffer, sizeof(buffer), MSG_PEEK | MSG_DONTWAIT) == 0) {
+                        printf("Hrac sa odpojil hra skoncila");
                         *d->hra = 5;
                     } else {
                         bzero(buffer, 256);
@@ -184,7 +177,8 @@ void *priebehHry(void *data) {
                 } else if (counter == 21) {
                     pthread_mutex_unlock(d->mutex);
                     *d->hra = 2;
-                    if (pripojenie(*d->newsockfd, buffer) == 1) {
+                    if (recv(*d->newsockfd, buffer, sizeof(buffer), MSG_PEEK | MSG_DONTWAIT) == 0) {
+                        printf("Hrac sa odpojil hra skoncila");
                         *d->hra = 5;
                     } else {
                         bzero(buffer, 256);
@@ -193,7 +187,8 @@ void *priebehHry(void *data) {
                     }
                 } else {
                     pthread_mutex_unlock(d->mutex);
-                    if (pripojenie(*d->newsockfd, buffer) == 1) {
+                    if (recv(*d->newsockfd, buffer, sizeof(buffer), MSG_PEEK | MSG_DONTWAIT) == 0) {
+                        printf("Hrac sa odpojil hra skoncila");
                         *d->hra = 5;
                     } else {
                         bzero(buffer, 256);
