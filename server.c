@@ -22,6 +22,22 @@ typedef struct data {
     pthread_cond_t *koniecTahu;
 } DATA;
 
+void vypis(char stlpec, char riadok, char hrac, char **hraciaPlocha, int socket) {
+
+    char buffer[256];
+    bzero(buffer, 256);
+    buffer[0] = stlpec;
+    buffer[1] = riadok;
+    buffer[2] = hrac;
+    write(socket, buffer, 255);
+    for (int i = 0; i < 6; i++) {
+        for (int j = 0; j < 7; j++) {
+            printf("%c ", *(*(hraciaPlocha + j) + i));
+        }
+        printf("\n");
+    }
+    printf("\n------------------------------------\n");
+}
 
 void *priebehHry(void *data) {
     DATA *d = data;
@@ -79,35 +95,22 @@ void *priebehHry(void *data) {
         }
         pomocnastlpec = stlpec;
         pomocnariadok = riadok;
-        bzero(buffer, 256);
-        buffer[0] = pomocnastlpec;
-        buffer[1] = pomocnariadok;
-        buffer[2] = 'X';
-        write(*d->newsockfd, buffer, 255);
-        for (int i = 0; i < 6; i++) {
-            for (int j = 0; j < 7; j++) {
-                printf("%c ", *(*(d->hraciaPlocha + j) + i));
-            }
-            printf("\n");
-        }
-        printf("\n------------------------------------\n");
-
+        pthread_mutex_lock(d->mutex);
+        vypis(pomocnastlpec, pomocnariadok, 'X', d->hraciaPlocha, *d->newsockfd);
         if (kontrolaVyhry(d->hraciaPlocha, stlpec, riadok)) {
+            pthread_mutex_unlock(d->mutex);
             *d->vyherca = 0;
             *d->hra = 1;
             bzero(buffer, 256);
             strcpy(buffer, "koniec");
             write(*d->newsockfd, buffer, 255);
-            pthread_mutex_lock(d->mutex);
         } else {
             pthread_mutex_unlock(d->mutex);
             bzero(buffer, 256);
             strcpy(buffer, "pokracuje");
             write(*d->newsockfd, buffer, 255);
-            pthread_mutex_lock(d->mutex);
         }
         if (*d->hra == 0) {
-            pthread_mutex_unlock(d->mutex);
             printf("Zadaj cislo stlpca\n");
             bzero(buffer, 256);
             fgets(buffer, 255, stdin);
@@ -138,46 +141,31 @@ void *priebehHry(void *data) {
             }
             pomocnastlpec = stlpec;
             pomocnariadok = riadok;
-            bzero(buffer, 256);
-            buffer[0] = pomocnastlpec;
-            buffer[1] = pomocnariadok;
-            buffer[2] = 'Y';
-            write(*d->newsockfd, buffer, 255);
-            for (int i = 0; i < 6; i++) {
-                for (int j = 0; j < 7; j++) {
-                    printf("%c ", *(*(d->hraciaPlocha + j) + i));
-                }
-                printf("\n");
-
-            }
-            printf("\n------------------------------------\n");
             pthread_mutex_lock(d->mutex);
-            *d->koniecTahov = *d->koniecTahov + 1;
+            vypis(pomocnastlpec, pomocnariadok, 'Y', d->hraciaPlocha, *d->newsockfd);
             if (kontrolaVyhry(d->hraciaPlocha, stlpec, riadok)) {
+                pthread_mutex_unlock(d->mutex);
                 *d->vyherca = 1;
                 *d->hra = 1;
-                pthread_mutex_unlock(d->mutex);
                 bzero(buffer, 256);
                 strcpy(buffer, "koniec");
                 write(*d->newsockfd, buffer, 255);
-                pthread_mutex_lock(d->mutex);
             } else if (counter == 21) {
-                *d->hra = 2;
                 pthread_mutex_unlock(d->mutex);
+                *d->hra = 2;
                 bzero(buffer, 256);
                 strcpy(buffer, "koniec");
                 write(*d->newsockfd, buffer, 255);
-                pthread_mutex_lock(d->mutex);
             } else {
                 pthread_mutex_unlock(d->mutex);
                 bzero(buffer, 256);
                 strcpy(buffer, "pokracuje");
                 write(*d->newsockfd, buffer, 255);
-                pthread_mutex_lock(d->mutex);
             }
 
 
         }
+        pthread_mutex_lock(d->mutex);
         *d->koniecTahov = 1;
         pthread_cond_signal(d->koniecTahu);
     }
@@ -199,15 +187,6 @@ void *skoreHry(void *data) {
         pthread_cond_signal(d->aktualizovaneSkore);
     }
 }
-
-
-
-//|00000000|
-//|00000000|
-//|00000000|
-//|00000000|
-//|00000000|
-
 
 int main(int argc, char *argv[]) {
     if (argc < 2) {
@@ -287,8 +266,6 @@ int main(int argc, char *argv[]) {
     pthread_join(skore, NULL);
 
     if (*dataSpol.hra == 1) {
-        const char *msg;
-        const int *msg2;
         if (*dataSpol.vyherca == 0) {
             bzero(buffer, 256);
             buffer[0] = 'X';
@@ -320,7 +297,6 @@ int main(int argc, char *argv[]) {
             printf("Jeho skore bolo %d\n", *dataSpol.skoreKlient);
         }
     }
-
     for (int i = 0; i < 7; i++) {
         free(arr[i]);
     }
@@ -330,7 +306,6 @@ int main(int argc, char *argv[]) {
     pthread_cond_destroy(&aktualneSkore);
     close(newsockfd);
     close(sockfd);
-
-
     return 0;
 }
+
