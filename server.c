@@ -36,6 +36,8 @@ void vypis(char stlpec, char riadok, char hrac, char **hraciaPlocha, int socket)
         }
         printf("\n");
     }
+    printf("------------------------------------\n");
+    printf("1 2 3 4 5 6 7");
     printf("\n------------------------------------\n");
 }
 
@@ -57,7 +59,8 @@ void *priebehHry(void *data) {
             s1 = *d->skoreKlient;
             s2 = *d->skoreServer;
             printf("x skore %d\n", s1);
-            printf("y skore %d\n", s2);
+            printf("y skore %d", s2);
+            printf("\n------------------------------------\n");
             bzero(buffer, 256);
             buffer[0] = s1;
             buffer[1] = s2;
@@ -80,7 +83,7 @@ void *priebehHry(void *data) {
         }
         while (error != 0) {
             bzero(buffer, 256);
-            strcpy(buffer, "Zadaj nove cislo\n");
+            strcpy(buffer, "Zadaj nove cislo: ");
             write(*d->newsockfd, buffer, 255);
             bzero(buffer, 256);
             read(*d->newsockfd, buffer, 255);
@@ -111,7 +114,7 @@ void *priebehHry(void *data) {
             write(*d->newsockfd, buffer, 255);
         }
         if (*d->hra == 0) {
-            printf("Zadaj cislo stlpca\n");
+            printf("Zadaj cislo stlpca: ");
             bzero(buffer, 256);
             fgets(buffer, 255, stdin);
             stlpec = atoi(buffer);
@@ -126,7 +129,7 @@ void *priebehHry(void *data) {
                 counter++;
             }
             while (error != 0) {
-                printf("Zadaj ine cislo \n");
+                printf("Zadaj ine cislo: ");
                 bzero(buffer, 256);
                 fgets(buffer, 255, stdin);
                 stlpec = atoi(buffer);
