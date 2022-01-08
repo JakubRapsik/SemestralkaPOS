@@ -56,9 +56,9 @@ void *priebehHry(void *data) {
     while (*d->hra == 0) {
         while (*d->koniecTahov == 1) {
             pthread_cond_wait(d->aktualizovaneSkore, d->mutex);
-            pthread_mutex_unlock(d->mutex);
             s1 = *d->skoreKlient;
             s2 = *d->skoreServer;
+            pthread_mutex_unlock(d->mutex);
             printf("x skore %d\n", s1);
             printf("y skore %d", s2);
             printf("\n------------------------------------\n");
