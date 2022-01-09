@@ -41,16 +41,6 @@ void vypis(char stlpec, char riadok, char hrac, char **hraciaPlocha, int socket)
     printf("------------------------------------\n");
 }
 
-int pripojenie(int socket, char *buffer) {
-
-    if (recv(socket, buffer, sizeof(buffer), MSG_PEEK | MSG_DONTWAIT) == 0) {
-        printf("Hrac sa odpojil hra skoncila");
-        return 1;
-    } else {
-        return 0;
-    }
-}
-
 void *priebehHry(void *data) {
     DATA *d = data;
     int riadok;
@@ -66,9 +56,9 @@ void *priebehHry(void *data) {
     while (*d->hra == 0) {
         while (*d->koniecTahov == 1) {
             pthread_cond_wait(d->aktualizovaneSkore, d->mutex);
-            pthread_mutex_unlock(d->mutex);
             s1 = *d->skoreKlient;
             s2 = *d->skoreServer;
+            pthread_mutex_unlock(d->mutex);
             printf("x skore %d\n", s1);
             printf("y skore %d", s2);
             printf("\n------------------------------------\n");
@@ -119,7 +109,8 @@ void *priebehHry(void *data) {
                 pthread_mutex_unlock(d->mutex);
                 *d->vyherca = 0;
                 *d->hra = 1;
-                if (pripojenie(*d->newsockfd, buffer) == 1) {
+                if (recv(*d->newsockfd, buffer, sizeof(buffer), MSG_PEEK | MSG_DONTWAIT) == 0) {
+                    printf("Hrac sa odpojil hra skoncila");
                     *d->hra = 5;
                 } else {
                     bzero(buffer, 256);
@@ -128,7 +119,8 @@ void *priebehHry(void *data) {
                 }
             } else {
                 pthread_mutex_unlock(d->mutex);
-                if (pripojenie(*d->newsockfd, buffer) == 1) {
+                if (recv(*d->newsockfd, buffer, sizeof(buffer), MSG_PEEK | MSG_DONTWAIT) == 0) {
+                    printf("Hrac sa odpojil hra skoncila");
                     *d->hra = 5;
                 } else {
                     bzero(buffer, 256);
@@ -173,7 +165,8 @@ void *priebehHry(void *data) {
                     pthread_mutex_unlock(d->mutex);
                     *d->vyherca = 1;
                     *d->hra = 1;
-                    if (pripojenie(*d->newsockfd, buffer) == 1) {
+                    if (recv(*d->newsockfd, buffer, sizeof(buffer), MSG_PEEK | MSG_DONTWAIT) == 0) {
+                        printf("Hrac sa odpojil hra skoncila");
                         *d->hra = 5;
                     } else {
                         bzero(buffer, 256);
@@ -183,7 +176,8 @@ void *priebehHry(void *data) {
                 } else if (counter == 21) {
                     pthread_mutex_unlock(d->mutex);
                     *d->hra = 2;
-                    if (pripojenie(*d->newsockfd, buffer) == 1) {
+                    if (recv(*d->newsockfd, buffer, sizeof(buffer), MSG_PEEK | MSG_DONTWAIT) == 0) {
+                        printf("Hrac sa odpojil hra skoncila");
                         *d->hra = 5;
                     } else {
                         bzero(buffer, 256);
@@ -192,7 +186,8 @@ void *priebehHry(void *data) {
                     }
                 } else {
                     pthread_mutex_unlock(d->mutex);
-                    if (pripojenie(*d->newsockfd, buffer) == 1) {
+                    if (recv(*d->newsockfd, buffer, sizeof(buffer), MSG_PEEK | MSG_DONTWAIT) == 0) {
+                        printf("Hrac sa odpojil hra skoncila");
                         *d->hra = 5;
                     } else {
                         bzero(buffer, 256);
@@ -232,21 +227,6 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
-    // dynamically create an array of pointers of size `m`
-    char **arr = (char **) malloc(7 * sizeof(char *));
-
-    // dynamically allocate memory of size `n` for each row
-    for (int r = 0; r < 7; r++) {
-        arr[r] = (char *) malloc(6 * sizeof(char));
-    }
-
-    for (int i = 0; i < 7; i++) {
-        for (int j = 0; j < 6; j++) {
-            arr[i][j] = 'O';
-        }
-    }
-
-
     int sockfd, newsockfd;
     int skoreKlient = 0;
     int skoreServer = 0;
@@ -283,6 +263,17 @@ int main(int argc, char *argv[]) {
         return 3;
     }
     //Koniec pripojovania
+    char **arr = (char **) malloc(7 * sizeof(char *));
+
+    for (int r = 0; r < 7; r++) {
+        arr[r] = (char *) malloc(6 * sizeof(char));
+    }
+
+    for (int i = 0; i < 7; i++) {
+        for (int j = 0; j < 6; j++) {
+            arr[i][j] = 'O';
+        }
+    }
 
     pthread_t priebehhry, skore;
 
